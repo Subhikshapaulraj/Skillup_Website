@@ -7,911 +7,406 @@
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Architects+Daughter&display=swap" rel="stylesheet">
 <style>
 :root {
-  --yellow: #f5c518;
-  --orange: #f07d1a;
-  --red: #e03c3c;
-  --green: #3eaf6f;
-  --blue: #2f7dd4;
-  --purple: #7c3fff;
-  --pink: #e0187a;
-  --teal: #0fb5cc;
-  --ink: #1a1620;
-  --paper: #fffdf4;
-  --grid: rgba(70,100,200,0.10);
-  --rule: rgba(200,60,60,0.30);
+  --yellow:#f5c518;--orange:#f07d1a;--red:#e03c3c;--green:#3eaf6f;
+  --blue:#2f7dd4;--purple:#7c3fff;--pink:#e0187a;--teal:#0fb5cc;
+  --ink:#1a1620;--paper:#fffdf4;--grid:rgba(70,100,200,0.10);--rule:rgba(200,60,60,0.30);
 }
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* ══════════════════════════════════════════════════
-   LAYER 1 — DENSE DOODLE BACKGROUND (full screen)
-   Each .page has position:relative; the SVG doodle
-   canvas is position:absolute, inset:0, z-index:0
-   ══════════════════════════════════════════════════ */
-
-body {
-  font-family: 'Caveat', cursive;
-  min-height: 100vh;
-  overflow-x: hidden;
-  background: var(--yellow);
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Caveat',cursive;min-height:100vh;overflow-x:hidden;background:var(--yellow)}
+.page{display:none;min-height:100vh;position:relative}
+.page.active{display:flex;align-items:flex-start;justify-content:center;padding:40px 20px 60px}
+.doodle-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.paper-card{
+  position:relative;z-index:10;background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;border-radius:4px;
+  box-shadow:0 4px 6px rgba(0,0,0,.08),0 12px 40px rgba(0,0,0,.18),8px 8px 0 rgba(0,0,0,.12);
+  border:2px solid rgba(0,0,0,.10);padding:48px 52px 56px 80px;width:100%;max-width:820px;border-left:none;
 }
+.paper-card::before{content:'';position:absolute;left:58px;top:0;bottom:0;width:2px;background:var(--rule);pointer-events:none}
+.paper-card::after{content:'';position:absolute;left:20px;top:0;bottom:0;width:28px;background-image:radial-gradient(circle at center,#d8d0c4 8px,transparent 9px);background-repeat:repeat-y;background-size:28px 52px;background-position:0 28px;pointer-events:none}
+/* LANDING */
+.brand-wrap{margin-bottom:32px}
+.brand-title{font-family:'Architects Daughter',cursive;font-size:clamp(64px,11vw,108px);line-height:.95;color:var(--ink);letter-spacing:-2px}
+.brand-title .hi{color:var(--yellow);-webkit-text-stroke:2.5px var(--ink);text-shadow:4px 4px 0 var(--orange)}
+.brand-sub{font-size:clamp(18px,2.8vw,26px);color:#44405a;margin-top:18px;line-height:1.55;max-width:500px}
+.brand-sub strong{font-weight:700;color:var(--ink);border-bottom:3px solid var(--yellow)}
+.start-btn{margin-top:44px;font-family:'Architects Daughter',cursive;font-size:26px;background:var(--ink);color:var(--paper);border:3px solid var(--ink);padding:16px 54px;cursor:pointer;border-radius:3px;box-shadow:6px 6px 0 var(--orange);transform:rotate(-1.2deg);transition:transform .15s,box-shadow .15s;display:inline-block}
+.start-btn:hover{transform:rotate(0deg) translateY(-3px);box-shadow:8px 8px 0 var(--orange)}
+.landing-note{margin-top:36px;font-size:15px;color:#a09ab8;transform:rotate(-.5deg);display:inline-block}
+/* FORM */
+.page-heading{font-family:'Architects Daughter',cursive;font-size:clamp(28px,4.5vw,46px);color:var(--ink);line-height:1.1;margin-bottom:6px}
+.page-sub{font-size:19px;color:#777;margin-bottom:36px}
+.form-group{margin-bottom:30px;position:relative}
+.form-label{font-family:'Architects Daughter',cursive;font-size:19px;color:#44405a;display:block;margin-bottom:8px}
+.form-input,.form-select{width:100%;font-family:'Caveat',cursive;font-size:22px;color:var(--ink);background:transparent;border:none;border-bottom:2.5px solid var(--ink);padding:8px 4px;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus{border-bottom-color:var(--blue)}
+.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='18' height='10' viewBox='0 0 18 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L9 9L17 1' stroke='%231a1620' stroke-width='2.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;padding-right:30px}
+.search-wrapper{position:relative}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;border:2.5px solid var(--ink);border-top:none;border-radius:0 0 6px 6px;max-height:210px;overflow-y:auto;z-index:60;display:none;box-shadow:4px 4px 0 rgba(0,0,0,.12)}
+.autocomplete-list.show{display:block}
+.autocomplete-item{font-family:'Caveat',cursive;font-size:19px;padding:9px 14px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.07);color:var(--ink)}
+.autocomplete-item:hover,.autocomplete-item.active{background:rgba(245,197,24,.28)}
+.nf-msg{font-size:15px;color:#999;padding:10px 14px;font-style:italic}
+.go-btn{font-family:'Architects Daughter',cursive;font-size:24px;background:var(--green);color:white;border:3px solid var(--ink);padding:14px 46px;cursor:pointer;border-radius:3px;box-shadow:5px 5px 0 var(--ink);margin-top:8px;transition:transform .15s,box-shadow .15s;transform:rotate(.4deg)}
+.go-btn:hover{transform:rotate(0deg) translateY(-2px);box-shadow:7px 7px 0 var(--ink)}
+.back-btn{font-family:'Caveat',cursive;font-size:17px;background:transparent;color:#666;border:2px solid #ccc;padding:7px 18px;border-radius:3px;cursor:pointer;margin-bottom:24px;transition:background .12s}
+.back-btn:hover{background:rgba(0,0,0,.04);color:var(--ink)}
+/* ROADMAP */
+.roadmap-title{font-family:'Architects Daughter',cursive;font-size:clamp(24px,4vw,40px);color:var(--ink);line-height:1.15;margin-bottom:4px}
+.field-badge{display:inline-block;font-family:'Caveat',cursive;font-size:15px;background:var(--yellow);border:2px solid var(--ink);border-radius:20px;padding:1px 12px;margin-left:10px;vertical-align:middle;transform:rotate(-1deg)}
+.greeting{font-size:19px;color:#666;margin-bottom:20px}
+.greeting strong{color:var(--ink);font-weight:700}
+.prog-wrap{margin-bottom:28px}
+.prog-label{font-family:'Architects Daughter',cursive;font-size:15px;color:#555;display:flex;justify-content:space-between;margin-bottom:7px}
+.prog-track{height:16px;background:#ede7d6;border:2px solid var(--ink);border-radius:20px;overflow:hidden}
+.prog-fill{height:100%;background:repeating-linear-gradient(45deg,var(--green),var(--green) 8px,#2d9459 8px,#2d9459 16px);border-radius:20px;transition:width .5s ease;width:0%}
+.dl-row{margin-bottom:28px;display:flex;flex-wrap:wrap;gap:10px}
+.dl-btn{font-family:'Architects Daughter',cursive;font-size:16px;padding:9px 22px;border:2.5px solid var(--ink);border-radius:3px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .12s,box-shadow .12s}
+.dl-btn:hover{transform:translateY(-2px);box-shadow:5px 5px 0 var(--ink)}
+.dl-pdf{background:var(--blue);color:white}
+.dl-txt{background:var(--purple);color:white}
+.road-path{position:relative;padding:10px 0 40px}
+.road-line{position:absolute;left:30px;top:0;bottom:0;width:5px;background:repeating-linear-gradient(to bottom,var(--ink) 0,var(--ink) 16px,transparent 16px,transparent 28px);border-radius:3px}
+.road-step{display:flex;align-items:flex-start;gap:18px;margin-bottom:26px;position:relative;animation:fadeSlide .4s ease both}
+@keyframes fadeSlide{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+.road-step:nth-child(1){animation-delay:.08s}.road-step:nth-child(2){animation-delay:.16s}
+.road-step:nth-child(3){animation-delay:.24s}.road-step:nth-child(4){animation-delay:.32s}
+.road-step:nth-child(5){animation-delay:.40s}.road-step:nth-child(6){animation-delay:.48s}
+.step-ico{width:54px;height:54px;border-radius:50%;border:3px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;position:relative;z-index:2;box-shadow:3px 3px 0 var(--ink);cursor:pointer;transition:transform .18s;background:white}
+.step-ico:hover{transform:scale(1.12) rotate(6deg)}
+.c0{background:#fff9e0;border-color:var(--orange);box-shadow:3px 3px 0 var(--orange)}
+.c1{background:#e0f6ec;border-color:var(--green);box-shadow:3px 3px 0 var(--green)}
+.c2{background:#e0eeff;border-color:var(--blue);box-shadow:3px 3px 0 var(--blue)}
+.c3{background:#ede0ff;border-color:var(--purple);box-shadow:3px 3px 0 var(--purple)}
+.c4{background:#ffe0ef;border-color:var(--pink);box-shadow:3px 3px 0 var(--pink)}
+.c5{background:#e0faff;border-color:var(--teal);box-shadow:3px 3px 0 var(--teal)}
+.step-card{flex:1;background:white;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;border:2.5px solid var(--ink);border-radius:3px;padding:12px 16px;box-shadow:4px 4px 0 var(--ink);cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative}
+.step-card:hover{transform:translateY(-2px);box-shadow:6px 6px 0 var(--ink)}
+.step-card::before{content:'';position:absolute;left:-12px;top:16px;border-right:12px solid var(--ink);border-top:9px solid transparent;border-bottom:9px solid transparent}
+.step-card::after{content:'';position:absolute;left:-9px;top:18px;border-right:10px solid white;border-top:7px solid transparent;border-bottom:7px solid transparent}
+.step-num{font-size:12px;color:#aaa;letter-spacing:1px;text-transform:uppercase;font-family:'Architects Daughter',cursive}
+.step-title{font-family:'Architects Daughter',cursive;font-size:18px;color:var(--ink);margin:2px 0 0}
+.step-items{display:none;margin-top:10px;padding-top:8px;border-top:2px dashed rgba(0,0,0,.12)}
+.step-items.open{display:block}
+.step-item{display:flex;align-items:flex-start;gap:9px;font-size:16px;color:#333;padding:5px 0;border-bottom:1px dotted rgba(0,0,0,.1);line-height:1.4;cursor:pointer}
+.step-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--green);flex-shrink:0;margin-top:2px;cursor:pointer}
+.step-item.done{text-decoration:line-through;color:#bbb}
+/* NOT FOUND */
+.nf-icon{font-size:72px;display:block;margin-bottom:16px;animation:wobble 2.5s ease-in-out infinite}
+@keyframes wobble{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.nf-title{font-family:'Architects Daughter',cursive;font-size:34px;color:var(--ink);margin-bottom:10px}
+.nf-desc{font-size:19px;color:#555;line-height:1.6;max-width:480px;margin-bottom:24px}
+.nf-desc strong{color:var(--red)}
+.nf-box{background:#fff9e0;border:2.5px solid var(--orange);border-radius:3px;padding:16px 20px;max-width:480px;font-size:18px;color:var(--ink);line-height:1.6;box-shadow:4px 4px 0 var(--orange);margin-bottom:24px}
+.email-btn{font-family:'Architects Daughter',cursive;font-size:21px;background:var(--orange);color:white;border:3px solid var(--ink);padding:12px 36px;border-radius:3px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);text-decoration:none;display:inline-block;transition:transform .15s}
+.email-btn:hover{transform:translateY(-2px)}
+/* CONFETTI */
+.confetti{position:fixed;width:10px;height:12px;top:-20px;pointer-events:none;z-index:9999;animation:fall linear forwards}
+@keyframes fall{to{top:110vh;transform:rotate(540deg) translateX(var(--dx,0px))}}
 
-.page {
-  display: none;
-  min-height: 100vh;
-  position: relative;
-}
-.page.active {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 40px 20px 60px;
-}
+/* ═══════════════════════════════════════════════════
+   AI CHATBOT WIDGET — Roadmap page only
+   ═══════════════════════════════════════════════════ */
 
-/* Dense doodle SVG — fills entire page behind everything */
-.doodle-canvas {
+/* Floating toggle button */
+#chat-toggle-btn {
+  display: none; /* shown only on roadmap page */
   position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* ══════════════════════════════════════════════════
-   LAYER 2 — GRID PAPER CARD (floating on top)
-   White card with CSS grid lines, drop shadow,
-   slight rotation for notebook feel
-   ══════════════════════════════════════════════════ */
-
-.paper-card {
-  position: relative;
-  z-index: 10;
-  background-color: var(--paper);
-  /* Grid lines: fine blue-grey horizontals + verticals */
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 28px 28px;
-  border-radius: 4px;
-  box-shadow:
-    0 4px 6px rgba(0,0,0,0.08),
-    0 12px 40px rgba(0,0,0,0.18),
-    8px 8px 0 rgba(0,0,0,0.12);
-  border: 2px solid rgba(0,0,0,0.10);
-  padding: 48px 52px 56px 80px;
-  width: 100%;
-  max-width: 820px;
-  /* Red left margin line */
-  border-left: none;
-}
-/* Red margin rule */
-.paper-card::before {
-  content: '';
-  position: absolute;
-  left: 58px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: var(--rule);
-  pointer-events: none;
-}
-/* Top punched holes */
-.paper-card::after {
-  content: '';
-  position: absolute;
-  left: 20px;
-  top: 0;
-  bottom: 0;
-  width: 28px;
-  background-image: radial-gradient(circle at center, #d8d0c4 8px, transparent 9px);
-  background-repeat: repeat-y;
-  background-size: 28px 52px;
-  background-position: 0 28px;
-  pointer-events: none;
-}
-
-/* ══════════════════════════
-   PAGE 1 — LANDING
-   ══════════════════════════ */
-
-.brand-wrap {
-  margin-bottom: 32px;
-}
-.brand-title {
-  font-family: 'Architects Daughter', cursive;
-  font-size: clamp(64px, 11vw, 108px);
-  line-height: 0.95;
-  color: var(--ink);
-  letter-spacing: -2px;
-}
-.brand-title .hi {
-  color: var(--yellow);
-  -webkit-text-stroke: 2.5px var(--ink);
-  text-shadow: 4px 4px 0 var(--orange);
-}
-.brand-sub {
-  font-size: clamp(18px, 2.8vw, 26px);
-  color: #44405a;
-  margin-top: 18px;
-  line-height: 1.55;
-  max-width: 500px;
-}
-.brand-sub strong {
-  font-weight: 700;
-  color: var(--ink);
-  border-bottom: 3px solid var(--yellow);
-}
-.start-btn {
-  margin-top: 44px;
-  font-family: 'Architects Daughter', cursive;
-  font-size: 26px;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9000;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
   background: var(--ink);
-  color: var(--paper);
-  border: 3px solid var(--ink);
-  padding: 16px 54px;
+  border: 3px solid var(--orange);
+  box-shadow: 4px 4px 0 var(--orange);
   cursor: pointer;
-  border-radius: 3px;
-  box-shadow: 6px 6px 0 var(--orange);
-  transform: rotate(-1.2deg);
-  transition: transform 0.15s, box-shadow 0.15s;
-  display: inline-block;
+  font-size: 26px;
+  align-items: center;
+  justify-content: center;
+  transition: transform .2s, box-shadow .2s;
 }
-.start-btn:hover {
-  transform: rotate(0deg) translateY(-3px);
-  box-shadow: 8px 8px 0 var(--orange);
-}
-.start-btn:active {
-  transform: rotate(0deg);
-  box-shadow: 3px 3px 0 var(--orange);
-}
-.landing-note {
-  margin-top: 36px;
-  font-size: 15px;
-  color: #a09ab8;
-  transform: rotate(-0.5deg);
-  display: inline-block;
-}
+#chat-toggle-btn:hover { transform: scale(1.1); box-shadow: 6px 6px 0 var(--orange); }
 
-/* ══════════════════════════
-   PAGE 2 — FORM
-   ══════════════════════════ */
-
-.page-heading {
-  font-family: 'Architects Daughter', cursive;
-  font-size: clamp(28px, 4.5vw, 46px);
-  color: var(--ink);
-  line-height: 1.1;
-  margin-bottom: 6px;
-}
-.page-sub {
-  font-size: 19px;
-  color: #777;
-  margin-bottom: 36px;
-}
-.form-group { margin-bottom: 30px; position: relative; }
-.form-label {
-  font-family: 'Architects Daughter', cursive;
-  font-size: 19px;
-  color: #44405a;
-  display: block;
-  margin-bottom: 8px;
-}
-.form-input, .form-select {
-  width: 100%;
+/* Chat panel */
+#chat-panel {
+  display: none;
+  position: fixed;
+  bottom: 104px;
+  right: 28px;
+  z-index: 9000;
+  width: 360px;
+  max-height: 520px;
+  flex-direction: column;
+  background: var(--paper);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 6px 6px 0 var(--orange), 0 16px 40px rgba(0,0,0,.22);
+  overflow: hidden;
   font-family: 'Caveat', cursive;
-  font-size: 22px;
+}
+#chat-panel.open { display: flex; }
+
+/* Chat header */
+.chat-header {
+  background: var(--ink);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.chat-header-icon { font-size: 22px; }
+.chat-header-text { flex: 1; }
+.chat-header-title {
+  font-family: 'Architects Daughter', cursive;
+  color: var(--yellow);
+  font-size: 16px;
+  line-height: 1.1;
+}
+.chat-header-sub {
+  color: rgba(255,255,255,.65);
+  font-size: 12px;
+  font-family: 'Caveat', cursive;
+  line-height: 1.3;
+}
+.chat-close-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.7);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.chat-close-btn:hover { color: white; background: rgba(255,255,255,.12); }
+
+/* Hint banner */
+.chat-hint {
+  background: linear-gradient(135deg, #fff9e0, #fff3cc);
+  border-bottom: 2px dashed rgba(0,0,0,.12);
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #5a4a00;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+.chat-hint strong { color: var(--ink); }
+
+/* Messages area */
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 14px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+.msg {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  animation: msgIn .2s ease;
+}
+@keyframes msgIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+.msg.user { flex-direction: row-reverse; }
+.msg-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  background: white;
+}
+.msg.user .msg-avatar { background: var(--yellow); }
+.msg-bubble {
+  max-width: 76%;
+  padding: 9px 13px;
+  border-radius: 4px;
+  border: 2px solid var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.msg.bot .msg-bubble { background: white; color: var(--ink); }
+.msg.user .msg-bubble { background: var(--ink); color: var(--paper); }
+.msg.bot.typing .msg-bubble { color: #aaa; font-style: italic; }
+
+/* Quick suggestion pills */
+.chat-suggestions {
+  padding: 6px 12px 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  flex-shrink: 0;
+  border-top: 1px dashed rgba(0,0,0,.1);
+}
+.sugg-pill {
+  font-family: 'Caveat', cursive;
+  font-size: 13px;
+  background: var(--yellow);
+  border: 1.5px solid var(--ink);
+  border-radius: 20px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.sugg-pill:hover { background: var(--orange); color: white; }
+
+/* Input row */
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 2.5px solid var(--ink);
+  flex-shrink: 0;
+  background: rgba(255,255,255,.5);
+}
+#chat-input {
+  flex: 1;
+  font-family: 'Caveat', cursive;
+  font-size: 16px;
   color: var(--ink);
   background: transparent;
   border: none;
-  border-bottom: 2.5px solid var(--ink);
-  padding: 8px 4px;
+  border-bottom: 2px solid var(--ink);
   outline: none;
-  transition: border-color 0.2s;
+  padding: 4px 2px;
 }
-.form-input:focus, .form-select:focus { border-bottom-color: var(--blue); }
-.form-select {
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='18' height='10' viewBox='0 0 18 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L9 9L17 1' stroke='%231a1620' stroke-width='2.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 6px center;
-  padding-right: 30px;
-}
-.search-wrapper { position: relative; }
-.autocomplete-list {
-  position: absolute;
-  top: 100%; left: 0; right: 0;
-  background: var(--paper);
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 28px 28px;
-  border: 2.5px solid var(--ink);
-  border-top: none;
-  border-radius: 0 0 6px 6px;
-  max-height: 210px;
-  overflow-y: auto;
-  z-index: 60;
-  display: none;
-  box-shadow: 4px 4px 0 rgba(0,0,0,0.12);
-}
-.autocomplete-list.show { display: block; }
-.autocomplete-item {
-  font-family: 'Caveat', cursive;
-  font-size: 19px;
-  padding: 9px 14px;
-  cursor: pointer;
-  border-bottom: 1px solid rgba(0,0,0,0.07);
-  color: var(--ink);
-}
-.autocomplete-item:hover, .autocomplete-item.active {
-  background: rgba(245,197,24,0.28);
-}
-.nf-msg { font-size: 15px; color: #999; padding: 10px 14px; font-style: italic; }
-.go-btn {
+#chat-input::placeholder { color: #bbb; }
+#chat-send-btn {
   font-family: 'Architects Daughter', cursive;
-  font-size: 24px;
+  font-size: 14px;
   background: var(--green);
   color: white;
-  border: 3px solid var(--ink);
-  padding: 14px 46px;
-  cursor: pointer;
-  border-radius: 3px;
-  box-shadow: 5px 5px 0 var(--ink);
-  margin-top: 8px;
-  transition: transform 0.15s, box-shadow 0.15s;
-  transform: rotate(0.4deg);
-}
-.go-btn:hover {
-  transform: rotate(0deg) translateY(-2px);
-  box-shadow: 7px 7px 0 var(--ink);
-}
-.back-btn {
-  font-family: 'Caveat', cursive;
-  font-size: 17px;
-  background: transparent;
-  color: #666;
-  border: 2px solid #ccc;
-  padding: 7px 18px;
-  border-radius: 3px;
-  cursor: pointer;
-  margin-bottom: 24px;
-  transition: background 0.12s;
-}
-.back-btn:hover { background: rgba(0,0,0,0.04); color: var(--ink); }
-
-/* ══════════════════════════
-   PAGE 3 — ROADMAP
-   ══════════════════════════ */
-
-.roadmap-title {
-  font-family: 'Architects Daughter', cursive;
-  font-size: clamp(24px, 4vw, 40px);
-  color: var(--ink);
-  line-height: 1.15;
-  margin-bottom: 4px;
-}
-.field-badge {
-  display: inline-block;
-  font-family: 'Caveat', cursive;
-  font-size: 15px;
-  background: var(--yellow);
   border: 2px solid var(--ink);
-  border-radius: 20px;
-  padding: 1px 12px;
-  margin-left: 10px;
-  vertical-align: middle;
-  transform: rotate(-1deg);
-}
-.greeting {
-  font-size: 19px;
-  color: #666;
-  margin-bottom: 20px;
-}
-.greeting strong { color: var(--ink); font-weight: 700; }
-
-/* Progress */
-.prog-wrap { margin-bottom: 28px; }
-.prog-label {
-  font-family: 'Architects Daughter', cursive;
-  font-size: 15px;
-  color: #555;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 7px;
-}
-.prog-track {
-  height: 16px;
-  background: #ede7d6;
-  border: 2px solid var(--ink);
-  border-radius: 20px;
-  overflow: hidden;
-}
-.prog-fill {
-  height: 100%;
-  background: repeating-linear-gradient(
-    45deg, var(--green), var(--green) 8px, #2d9459 8px, #2d9459 16px
-  );
-  border-radius: 20px;
-  transition: width 0.5s ease;
-  width: 0%;
-}
-
-/* Download row */
-.dl-row { margin-bottom: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
-.dl-btn {
-  font-family: 'Architects Daughter', cursive;
-  font-size: 16px;
-  padding: 9px 22px;
-  border: 2.5px solid var(--ink);
-  border-radius: 3px;
+  border-radius: 4px;
+  padding: 6px 14px;
   cursor: pointer;
-  box-shadow: 3px 3px 0 var(--ink);
-  transition: transform 0.12s, box-shadow 0.12s;
-}
-.dl-btn:hover { transform: translateY(-2px); box-shadow: 5px 5px 0 var(--ink); }
-.dl-pdf { background: var(--blue); color: white; }
-.dl-txt { background: var(--purple); color: white; }
-
-/* Road path */
-.road-path { position: relative; padding: 10px 0 40px 0; }
-.road-line {
-  position: absolute;
-  left: 30px;
-  top: 0; bottom: 0;
-  width: 5px;
-  background: repeating-linear-gradient(
-    to bottom,
-    var(--ink) 0, var(--ink) 16px,
-    transparent 16px, transparent 28px
-  );
-  border-radius: 3px;
-}
-.road-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 18px;
-  margin-bottom: 26px;
-  position: relative;
-  animation: fadeSlide 0.4s ease both;
-}
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateX(-16px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-.road-step:nth-child(1) { animation-delay: 0.08s; }
-.road-step:nth-child(2) { animation-delay: 0.16s; }
-.road-step:nth-child(3) { animation-delay: 0.24s; }
-.road-step:nth-child(4) { animation-delay: 0.32s; }
-.road-step:nth-child(5) { animation-delay: 0.40s; }
-.road-step:nth-child(6) { animation-delay: 0.48s; }
-
-.step-ico {
-  width: 54px; height: 54px;
-  border-radius: 50%;
-  border: 3px solid var(--ink);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px;
+  box-shadow: 2px 2px 0 var(--ink);
   flex-shrink: 0;
-  position: relative;
-  z-index: 2;
-  box-shadow: 3px 3px 0 var(--ink);
-  cursor: pointer;
-  transition: transform 0.18s;
-  background: white;
+  transition: transform .12s;
 }
-.step-ico:hover { transform: scale(1.12) rotate(6deg); }
-.c0 { background: #fff9e0; border-color: var(--orange); box-shadow: 3px 3px 0 var(--orange); }
-.c1 { background: #e0f6ec; border-color: var(--green);  box-shadow: 3px 3px 0 var(--green); }
-.c2 { background: #e0eeff; border-color: var(--blue);   box-shadow: 3px 3px 0 var(--blue); }
-.c3 { background: #ede0ff; border-color: var(--purple); box-shadow: 3px 3px 0 var(--purple); }
-.c4 { background: #ffe0ef; border-color: var(--pink);   box-shadow: 3px 3px 0 var(--pink); }
-.c5 { background: #e0faff; border-color: var(--teal);   box-shadow: 3px 3px 0 var(--teal); }
+#chat-send-btn:hover { transform: translateY(-1px); }
+#chat-send-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-.step-card {
-  flex: 1;
-  background: white;
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 28px 28px;
-  border: 2.5px solid var(--ink);
-  border-radius: 3px;
-  padding: 12px 16px;
-  box-shadow: 4px 4px 0 var(--ink);
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-  position: relative;
+@media(max-width:480px){
+  #chat-panel { width: calc(100vw - 20px); right: 10px; bottom: 90px; }
+  #chat-toggle-btn { right: 16px; bottom: 16px; }
 }
-.step-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 6px 6px 0 var(--ink);
-}
-/* speech-bubble pointer */
-.step-card::before {
-  content: '';
-  position: absolute;
-  left: -12px; top: 16px;
-  border-right: 12px solid var(--ink);
-  border-top: 9px solid transparent;
-  border-bottom: 9px solid transparent;
-}
-.step-card::after {
-  content: '';
-  position: absolute;
-  left: -9px; top: 18px;
-  border-right: 10px solid white;
-  border-top: 7px solid transparent;
-  border-bottom: 7px solid transparent;
-}
-.step-num { font-size: 12px; color: #aaa; letter-spacing: 1px; text-transform: uppercase; font-family: 'Architects Daughter', cursive; }
-.step-title { font-family: 'Architects Daughter', cursive; font-size: 18px; color: var(--ink); margin: 2px 0 0; }
-.step-items { display: none; margin-top: 10px; padding-top: 8px; border-top: 2px dashed rgba(0,0,0,0.12); }
-.step-items.open { display: block; }
-.step-item {
-  display: flex; align-items: flex-start; gap: 9px;
-  font-size: 16px; color: #333; padding: 5px 0;
-  border-bottom: 1px dotted rgba(0,0,0,0.1);
-  line-height: 1.4; cursor: pointer;
-}
-.step-item input[type=checkbox] {
-  width: 16px; height: 16px;
-  accent-color: var(--green);
-  flex-shrink: 0; margin-top: 2px; cursor: pointer;
-}
-.step-item.done { text-decoration: line-through; color: #bbb; }
-
-/* ══════════════════════════
-   PAGE 4 — NOT FOUND
-   ══════════════════════════ */
-
-.nf-icon { font-size: 72px; display: block; margin-bottom: 16px; animation: wobble 2.5s ease-in-out infinite; }
-@keyframes wobble {
-  0%,100% { transform: rotate(-6deg); }
-  50%      { transform: rotate(6deg); }
-}
-.nf-title { font-family: 'Architects Daughter', cursive; font-size: 34px; color: var(--ink); margin-bottom: 10px; }
-.nf-desc { font-size: 19px; color: #555; line-height: 1.6; max-width: 480px; margin-bottom: 24px; }
-.nf-desc strong { color: var(--red); }
-.nf-box {
-  background: #fff9e0;
-  border: 2.5px solid var(--orange);
-  border-radius: 3px;
-  padding: 16px 20px;
-  max-width: 480px;
-  font-size: 18px;
-  color: var(--ink);
-  line-height: 1.6;
-  box-shadow: 4px 4px 0 var(--orange);
-  margin-bottom: 24px;
-}
-.email-btn {
-  font-family: 'Architects Daughter', cursive;
-  font-size: 21px;
-  background: var(--orange);
-  color: white;
-  border: 3px solid var(--ink);
-  padding: 12px 36px;
-  border-radius: 3px;
-  cursor: pointer;
-  box-shadow: 4px 4px 0 var(--ink);
-  text-decoration: none;
-  display: inline-block;
-  transition: transform 0.15s;
-}
-.email-btn:hover { transform: translateY(-2px); }
-
-/* ══════════════════════════
-   CONFETTI
-   ══════════════════════════ */
-.confetti {
-  position: fixed;
-  width: 10px; height: 12px;
-  top: -20px;
-  pointer-events: none;
-  z-index: 9999;
-  animation: fall linear forwards;
-}
-@keyframes fall {
-  to { top: 110vh; transform: rotate(540deg) translateX(var(--dx, 0px)); }
-}
-
-/* ══════════════════════════
-   RESPONSIVE
-   ══════════════════════════ */
-@media (max-width: 640px) {
-  .page.active { padding: 16px 10px 40px; }
-  .paper-card { padding: 36px 20px 40px 52px; }
-  .paper-card::before { left: 40px; }
-  .paper-card::after { left: 10px; }
-  .step-ico { width: 42px; height: 42px; font-size: 19px; }
-  .brand-title { font-size: 54px; }
+@media(max-width:640px){
+  .page.active{padding:16px 10px 40px}
+  .paper-card{padding:36px 20px 40px 52px}
+  .paper-card::before{left:40px}
+  .paper-card::after{left:10px}
+  .step-ico{width:42px;height:42px;font-size:19px}
+  .brand-title{font-size:54px}
 }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     DENSE DOODLE CANVAS (fixed behind all)
-     ══════════════════════════════════════ -->
+<!-- ══ DOODLE BACKGROUND SVG ══ -->
 <svg class="doodle-canvas" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
-  <!-- Background fill -->
   <rect width="1400" height="900" fill="#f5c518"/>
-
-  <!-- ─── ROW 1 ─── -->
-  <!-- Smiley face 1 -->
   <rect x="20" y="10" width="90" height="90" rx="16" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <circle cx="47" cy="45" r="7" fill="#1a1620"/>
-  <circle cx="83" cy="45" r="7" fill="#1a1620"/>
+  <circle cx="47" cy="45" r="7" fill="#1a1620"/><circle cx="83" cy="45" r="7" fill="#1a1620"/>
   <path d="M42 68 Q65 84 88 68" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-
-  <!-- Spiral 1 -->
   <path d="M155 55 m0,0 a4,4 0 1,1 8,0 a12,12 0 1,1 -24,0 a20,20 0 1,1 40,0 a28,28 0 1,1 -56,0" fill="none" stroke="#1a1620" stroke-width="3"/>
-
-  <!-- Flower 1 -->
   <circle cx="280" cy="50" r="12" fill="#1a1620"/>
-  <circle cx="280" cy="22" r="10" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="280" cy="78" r="10" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="252" cy="50" r="10" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="308" cy="50" r="10" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="260" cy="30" r="10" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="300" cy="30" r="10" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="260" cy="70" r="10" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="300" cy="70" r="10" fill="none" stroke="#1a1620" stroke-width="3"/>
-
-  <!-- Wavy line -->
+  <circle cx="280" cy="22" r="10" fill="none" stroke="#1a1620" stroke-width="3"/><circle cx="280" cy="78" r="10" fill="none" stroke="#1a1620" stroke-width="3"/>
+  <circle cx="252" cy="50" r="10" fill="none" stroke="#1a1620" stroke-width="3"/><circle cx="308" cy="50" r="10" fill="none" stroke="#1a1620" stroke-width="3"/>
   <path d="M340 40 Q360 20 380 40 Q400 60 420 40 Q440 20 460 40 Q480 60 500 40 Q520 20 540 40 Q560 60 580 40" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- Big smiley face circle -->
   <circle cx="660" cy="55" r="48" fill="none" stroke="#1a1620" stroke-width="4"/>
-  <circle cx="644" cy="42" r="8" fill="#1a1620"/>
-  <circle cx="676" cy="42" r="8" fill="#1a1620"/>
+  <circle cx="644" cy="42" r="8" fill="#1a1620"/><circle cx="676" cy="42" r="8" fill="#1a1620"/>
   <path d="M636 68 Q660 86 684 68" fill="none" stroke="#1a1620" stroke-width="4" stroke-linecap="round"/>
-  <!-- Hair squiggles -->
-  <path d="M630 16 Q620 5 610 14" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <path d="M660 10 Q660 0 655 10" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <path d="M690 16 Q700 5 710 14" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- Star burst -->
   <line x1="780" y1="20" x2="780" y2="90" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
   <line x1="745" y1="55" x2="815" y2="55" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
   <line x1="755" y1="30" x2="805" y2="80" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
   <line x1="805" y1="30" x2="755" y2="80" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- Curly brace shape -->
-  <path d="M860 20 Q840 20 840 40 Q840 55 820 55 Q840 55 840 70 Q840 90 860 90" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-
-  <!-- Face with X eyes -->
   <circle cx="950" cy="55" r="40" fill="none" stroke="#1a1620" stroke-width="3.5"/>
   <line x1="934" y1="39" x2="944" y2="49" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
   <line x1="944" y1="39" x2="934" y2="49" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
   <line x1="956" y1="39" x2="966" y2="49" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
   <line x1="966" y1="39" x2="956" y2="49" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
   <path d="M932 68 Q950 76 968 68" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- Dashes -->
-  <line x1="1010" y1="30" x2="1040" y2="30" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <line x1="1050" y1="30" x2="1080" y2="30" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <line x1="1010" y1="50" x2="1080" y2="50" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <line x1="1020" y1="70" x2="1070" y2="70" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- Spiral 2 right -->
   <path d="M1160 55 m0,0 a4,4 0 1,1 8,0 a14,14 0 1,1 -28,0 a22,22 0 1,1 44,0 a30,30 0 1,1 -60,0" fill="none" stroke="#1a1620" stroke-width="3"/>
-
-  <!-- Octopus-ish face -->
   <circle cx="1300" cy="48" r="36" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <circle cx="1288" cy="38" r="6" fill="#1a1620"/>
-  <circle cx="1312" cy="38" r="6" fill="#1a1620"/>
+  <circle cx="1288" cy="38" r="6" fill="#1a1620"/><circle cx="1312" cy="38" r="6" fill="#1a1620"/>
   <path d="M1284 60 Q1300 70 1316 60" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <!-- tentacle-ish things -->
-  <path d="M1275 72 Q1265 90 1270 100" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <path d="M1288 78 Q1285 98 1290 105" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <path d="M1300 80 Q1300 100 1300 108" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <path d="M1312 78 Q1315 98 1310 105" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <path d="M1325 72 Q1335 90 1330 100" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- ─── ROW 2 ─── -->
-  <!-- Flower 2 left -->
   <circle cx="40" cy="200" r="14" fill="#1a1620"/>
   <ellipse cx="40" cy="168" rx="10" ry="16" fill="none" stroke="#1a1620" stroke-width="3"/>
   <ellipse cx="40" cy="232" rx="10" ry="16" fill="none" stroke="#1a1620" stroke-width="3"/>
   <ellipse cx="8" cy="200" rx="16" ry="10" fill="none" stroke="#1a1620" stroke-width="3"/>
   <ellipse cx="72" cy="200" rx="16" ry="10" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <ellipse cx="18" cy="178" rx="10" ry="16" fill="none" stroke="#1a1620" stroke-width="3" transform="rotate(-45,18,178)"/>
-  <ellipse cx="62" cy="178" rx="10" ry="16" fill="none" stroke="#1a1620" stroke-width="3" transform="rotate(45,62,178)"/>
-  <ellipse cx="18" cy="222" rx="10" ry="16" fill="none" stroke="#1a1620" stroke-width="3" transform="rotate(45,18,222)"/>
-  <ellipse cx="62" cy="222" rx="10" ry="16" fill="none" stroke="#1a1620" stroke-width="3" transform="rotate(-45,62,222)"/>
-
-  <!-- Lightning bolt -->
   <path d="M130 150 L110 200 L130 200 L110 250 L150 195 L130 195 L150 150 Z" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linejoin="round"/>
-
-  <!-- Swirly face -->
   <circle cx="220" cy="200" r="46" fill="none" stroke="#1a1620" stroke-width="4"/>
-  <!-- spiral eyes -->
   <path d="M202 188 m0,0 a3,3 0 1,1 6,0 a9,9 0 1,1 -18,0 a14,14 0 1,0 28,0" fill="none" stroke="#1a1620" stroke-width="2.5"/>
   <path d="M234 188 m0,0 a3,3 0 1,1 6,0 a9,9 0 1,1 -18,0 a14,14 0 1,0 28,0" fill="none" stroke="#1a1620" stroke-width="2.5"/>
   <path d="M198 218 Q220 234 242 218" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-  <!-- eyebrows -->
-  <path d="M194 176 Q204 168 214 176" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <path d="M226 176 Q236 168 246 176" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- Big spiral -->
   <path d="M370 200 m0,0 a5,5 0 1,1 10,0 a16,16 0 1,1 -32,0 a27,27 0 1,1 54,0 a38,38 0 1,1 -76,0 a49,49 0 1,1 98,0" fill="none" stroke="#1a1620" stroke-width="3"/>
-
-  <!-- Loopy lines 1 -->
   <path d="M490 160 Q510 140 530 160 Q550 180 570 160 Q590 140 610 160" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
   <path d="M490 200 Q510 180 530 200 Q550 220 570 200 Q590 180 610 200" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <path d="M490 240 Q510 220 530 240 Q550 260 570 240 Q590 220 610 240" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- Cat/alien face -->
   <ellipse cx="720" cy="200" rx="48" ry="44" fill="none" stroke="#1a1620" stroke-width="4"/>
-  <!-- pointy ears -->
   <path d="M680 164 L668 140 L694 156" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linejoin="round"/>
   <path d="M760 164 L772 140 L746 156" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linejoin="round"/>
-  <circle cx="706" cy="192" r="9" fill="#1a1620"/>
-  <circle cx="734" cy="192" r="9" fill="#1a1620"/>
-  <!-- nose -->
-  <path d="M716 210 L720 220 L724 210" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- whiskers -->
-  <line x1="680" y1="215" x2="710" y2="218" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="680" y1="225" x2="710" y2="222" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="760" y1="215" x2="730" y2="218" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="760" y1="225" x2="730" y2="222" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-
-  <!-- 4-point star -->
+  <circle cx="706" cy="192" r="9" fill="#1a1620"/><circle cx="734" cy="192" r="9" fill="#1a1620"/>
   <path d="M840 155 L852 192 L840 245 L828 192 Z" fill="none" stroke="#1a1620" stroke-width="3.5"/>
   <path d="M793 200 L830 188 L887 200 L830 212 Z" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-
-  <!-- Pill shapes -->
   <rect x="910" y="165" width="80" height="30" rx="15" fill="none" stroke="#1a1620" stroke-width="3.5"/>
   <rect x="910" y="205" width="80" height="30" rx="15" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-
-  <!-- Big round face right -->
   <circle cx="1090" cy="200" r="52" fill="none" stroke="#1a1620" stroke-width="4"/>
-  <circle cx="1074" cy="186" r="9" fill="#1a1620"/>
-  <circle cx="1106" cy="186" r="9" fill="#1a1620"/>
-  <!-- open mouth teeth -->
+  <circle cx="1074" cy="186" r="9" fill="#1a1620"/><circle cx="1106" cy="186" r="9" fill="#1a1620"/>
   <path d="M1066 218 Q1090 240 1114 218" fill="none" stroke="#1a1620" stroke-width="4" stroke-linecap="round"/>
-  <line x1="1076" y1="222" x2="1076" y2="232" stroke="#1a1620" stroke-width="2.5"/>
-  <line x1="1090" y1="226" x2="1090" y2="236" stroke="#1a1620" stroke-width="2.5"/>
-  <line x1="1104" y1="222" x2="1104" y2="232" stroke="#1a1620" stroke-width="2.5"/>
-
-  <!-- Small curly shapes -->
-  <path d="M1180 160 Q1190 150 1200 160 Q1210 170 1200 180 Q1190 190 1180 180 Q1170 170 1180 160" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <path d="M1220 170 Q1230 160 1240 170 Q1250 180 1240 190 Q1230 200 1220 190 Q1210 180 1220 170" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <path d="M1260 160 Q1270 150 1280 160 Q1290 170 1280 180 Q1270 190 1260 180 Q1250 170 1260 160" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <path d="M1300 170 Q1310 160 1320 170 Q1330 180 1320 190 Q1310 200 1300 190 Q1290 180 1300 170" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <path d="M1340 160 Q1350 150 1360 160 Q1370 170 1360 180 Q1350 190 1340 180 Q1330 170 1340 160" fill="none" stroke="#1a1620" stroke-width="3"/>
-
-  <!-- ─── ROW 3 ─── -->
-  <!-- Looping ribbon left -->
   <path d="M10 330 C30 310 60 350 40 360 C20 370 0 340 20 330 C40 320 80 355 60 365 C40 375 10 355 30 345" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- Double spiral -->
   <path d="M140 370 m0,0 a3,3 0 1,0 -6,0 a10,10 0 1,0 20,0 a17,17 0 1,0 -34,0 a24,24 0 1,0 48,0 a31,31 0 1,0 -62,0" fill="none" stroke="#1a1620" stroke-width="3"/>
-
-  <!-- 5-pointed star -->
   <path d="M250 310 L260 342 L294 342 L268 362 L278 394 L250 374 L222 394 L232 362 L206 342 L240 342 Z" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linejoin="round"/>
-
-  <!-- Face with huge eyes -->
   <ellipse cx="380" cy="360" rx="52" ry="46" fill="none" stroke="#1a1620" stroke-width="4"/>
-  <circle cx="360" cy="348" r="14" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <circle cx="400" cy="348" r="14" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <circle cx="362" cy="350" r="5" fill="#1a1620"/>
-  <circle cx="402" cy="350" r="5" fill="#1a1620"/>
+  <circle cx="360" cy="348" r="14" fill="none" stroke="#1a1620" stroke-width="3.5"/><circle cx="400" cy="348" r="14" fill="none" stroke="#1a1620" stroke-width="3.5"/>
+  <circle cx="362" cy="350" r="5" fill="#1a1620"/><circle cx="402" cy="350" r="5" fill="#1a1620"/>
   <path d="M358 382 Q380 398 402 382" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-
-  <!-- Horizontal zigzag -->
   <path d="M460 340 L480 320 L500 340 L520 320 L540 340 L560 320 L580 340 L600 320 L620 340 L640 320 L660 340" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M460 380 L480 360 L500 380 L520 360 L540 380 L560 360 L580 380 L600 360 L620 380 L640 360 L660 380" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-
-  <!-- Spiral 3 big -->
   <path d="M760 360 m0,0 a5,5 0 1,1 10,0 a18,18 0 1,1 -36,0 a31,31 0 1,1 62,0 a44,44 0 1,1 -88,0" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-
-  <!-- Cloud face -->
-  <path d="M870 330 Q870 310 890 310 Q900 296 916 300 Q926 290 940 296 Q956 290 962 306 Q978 306 978 322 Q990 328 986 342 Q990 358 976 362 Q972 378 958 374 Q952 386 938 380 Q928 388 916 382 Q902 390 892 380 Q876 380 872 366 Q860 362 860 348 Q856 334 870 330 Z" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <circle cx="898" cy="348" r="6" fill="#1a1620"/>
-  <circle cx="932" cy="348" r="6" fill="#1a1620"/>
-  <circle cx="966" cy="348" r="6" fill="#1a1620"/>
-
-  <!-- Tiny smiley row -->
-  <circle cx="1060" cy="350" r="22" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="1053" cy="344" r="4" fill="#1a1620"/>
-  <circle cx="1067" cy="344" r="4" fill="#1a1620"/>
-  <path d="M1050 360 Q1060 368 1070 360" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-
-  <circle cx="1120" cy="350" r="22" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="1113" cy="344" r="4" fill="#1a1620"/>
-  <circle cx="1127" cy="344" r="4" fill="#1a1620"/>
-  <path d="M1110 360 Q1120 368 1130 360" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-
-  <circle cx="1180" cy="350" r="22" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="1173" cy="344" r="4" fill="#1a1620"/>
-  <circle cx="1187" cy="344" r="4" fill="#1a1620"/>
-  <path d="M1170 360 Q1180 368 1190 360" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-
-  <circle cx="1240" cy="350" r="22" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="1233" cy="344" r="4" fill="#1a1620"/>
-  <circle cx="1247" cy="344" r="4" fill="#1a1620"/>
-  <path d="M1230 360 Q1240 368 1250 360" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-
-  <circle cx="1300" cy="350" r="22" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="1293" cy="344" r="4" fill="#1a1620"/>
-  <circle cx="1307" cy="344" r="4" fill="#1a1620"/>
-  <path d="M1290 360 Q1300 368 1310 360" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-
-  <circle cx="1360" cy="350" r="22" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="1353" cy="344" r="4" fill="#1a1620"/>
-  <circle cx="1367" cy="344" r="4" fill="#1a1620"/>
-  <path d="M1350 360 Q1360 368 1370 360" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-
-  <!-- ─── ROW 4 (bottom) ─── -->
-  <!-- Spiky sun -->
   <circle cx="60" cy="520" r="32" fill="none" stroke="#1a1620" stroke-width="3.5"/>
   <line x1="60" y1="476" x2="60" y2="464" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="60" y1="564" x2="60" y2="576" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
   <line x1="16" y1="520" x2="4" y2="520" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
   <line x1="104" y1="520" x2="116" y2="520" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="29" y1="489" x2="20" y2="480" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="91" y1="551" x2="100" y2="560" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="29" y1="551" x2="20" y2="560" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="91" y1="489" x2="100" y2="480" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-  <!-- sun face -->
-  <circle cx="50" cy="514" r="5" fill="#1a1620"/>
-  <circle cx="70" cy="514" r="5" fill="#1a1620"/>
+  <circle cx="50" cy="514" r="5" fill="#1a1620"/><circle cx="70" cy="514" r="5" fill="#1a1620"/>
   <path d="M48 530 Q60 540 72 530" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- Connected circles -->
-  <circle cx="160" cy="480" r="18" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="206" cy="480" r="18" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="252" cy="480" r="18" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="160" cy="530" r="18" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="206" cy="530" r="18" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="252" cy="530" r="18" fill="none" stroke="#1a1620" stroke-width="3"/>
-
-  <!-- Big looping path -->
-  <path d="M300 480 C320 460 360 500 340 520 C320 540 300 510 320 490 C340 470 380 510 360 530 C340 550 310 530 330 510" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-
-  <!-- Triangle face -->
-  <path d="M440 550 L480 470 L520 550 Z" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linejoin="round"/>
-  <circle cx="470" cy="520" r="5" fill="#1a1620"/>
-  <circle cx="490" cy="520" r="5" fill="#1a1620"/>
-  <path d="M468 536 Q480 542 492 536" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-
-  <!-- Big spiral bottom -->
-  <path d="M610 520 m0,0 a6,6 0 1,0 -12,0 a20,20 0 1,0 40,0 a34,34 0 1,0 -68,0 a48,48 0 1,0 96,0" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-
-  <!-- Flower bottom -->
-  <circle cx="760" cy="520" r="15" fill="#1a1620"/>
-  <ellipse cx="760" cy="486" rx="11" ry="18" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <ellipse cx="760" cy="554" rx="11" ry="18" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <ellipse cx="724" cy="520" rx="18" ry="11" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <ellipse cx="796" cy="520" rx="18" ry="11" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <ellipse cx="736" cy="493" rx="11" ry="18" fill="none" stroke="#1a1620" stroke-width="3.5" transform="rotate(-45,736,493)"/>
-  <ellipse cx="784" cy="493" rx="11" ry="18" fill="none" stroke="#1a1620" stroke-width="3.5" transform="rotate(45,784,493)"/>
-
-  <!-- Blobs -->
-  <path d="M870 490 C890 470 920 475 925 495 C930 515 915 535 895 535 C875 535 858 520 860 500 C862 490 870 490 870 490Z" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <circle cx="884" cy="506" r="5" fill="#1a1620"/>
-  <circle cx="908" cy="506" r="5" fill="#1a1620"/>
-  <path d="M882 520 Q896 528 910 520" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-
-  <!-- Wavy vertical right side -->
-  <path d="M1020 460 Q1040 480 1020 500 Q1000 520 1020 540 Q1040 560 1020 580" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <path d="M1060 460 Q1080 480 1060 500 Q1040 520 1060 540 Q1080 560 1060 580" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <path d="M1100 460 Q1120 480 1100 500 Q1080 520 1100 540 Q1120 560 1100 580" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- Mushroom -->
-  <ellipse cx="1210" cy="480" rx="45" ry="35" fill="none" stroke="#1a1620" stroke-width="3.5"/>
+  <circle cx="1210" cy="480" r="42" fill="none" stroke="#1a1620" stroke-width="3.5"/>
   <line x1="1195" y1="515" x2="1195" y2="560" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
   <line x1="1225" y1="515" x2="1225" y2="560" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="1195" y1="560" x2="1225" y2="560" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-  <circle cx="1196" cy="468" r="5" fill="#1a1620"/>
-  <circle cx="1224" cy="462" r="5" fill="#1a1620"/>
-  <circle cx="1210" cy="490" r="5" fill="#1a1620"/>
-
-  <!-- Big star bottom right -->
   <path d="M1320 470 L1334 514 L1380 514 L1344 540 L1358 584 L1320 558 L1282 584 L1296 540 L1260 514 L1306 514 Z" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linejoin="round"/>
-
-  <!-- ─── FILL GAPS — extra elements scattered ─── -->
-  <!-- extra spiral top right corner -->
-  <path d="M1390 30 m0,0 a3,3 0 1,1 6,0 a9,9 0 1,1 -18,0 a15,15 0 1,1 30,0" fill="none" stroke="#1a1620" stroke-width="2.5"/>
-  <!-- mini faces at corners -->
-  <circle cx="1390" cy="480" r="18" fill="none" stroke="#1a1620" stroke-width="2.5"/>
-  <circle cx="1384" cy="475" r="3" fill="#1a1620"/>
-  <circle cx="1396" cy="475" r="3" fill="#1a1620"/>
-  <path d="M1382 486 Q1390 492 1398 486" fill="none" stroke="#1a1620" stroke-width="2" stroke-linecap="round"/>
-  <!-- loops top area -->
-  <path d="M810 10 Q830 0 840 15 Q850 30 830 35 Q810 30 810 10" fill="none" stroke="#1a1620" stroke-width="2.5"/>
-  <path d="M1000 10 Q1010 0 1020 10 Q1030 20 1020 30 Q1010 40 1000 30 Q990 20 1000 10" fill="none" stroke="#1a1620" stroke-width="2.5"/>
-  <!-- random dashes mid -->
-  <line x1="490" y1="440" x2="520" y2="440" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <line x1="530" y1="440" x2="560" y2="440" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <line x1="490" y1="455" x2="560" y2="455" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-  <!-- squiggle -->
-  <path d="M1150 430 Q1160 420 1170 430 Q1180 440 1190 430 Q1200 420 1210 430" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M1150 450 Q1160 440 1170 450 Q1180 460 1190 450 Q1200 440 1210 450" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-
-  <!-- Bottom row overflow elements -->
-  <circle cx="160" cy="620" r="30" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="154" cy="613" r="5" fill="#1a1620"/>
-  <circle cx="166" cy="613" r="5" fill="#1a1620"/>
-  <path d="M151 626 Q160 634 169 626" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-
-  <path d="M280 590 m0,0 a4,4 0 1,1 8,0 a12,12 0 1,1 -24,0 a20,20 0 1,1 40,0 a28,28 0 1,1 -56,0" fill="none" stroke="#1a1620" stroke-width="3"/>
-
-  <path d="M430 610 L444 650 L480 650 L452 672 L462 708 L430 686 L398 708 L408 672 L380 650 L416 650 Z" fill="none" stroke="#1a1620" stroke-width="3" stroke-linejoin="round"/>
-
-  <path d="M560 600 Q580 580 600 600 Q620 620 640 600 Q660 580 680 600 Q700 620 720 600" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-
-  <ellipse cx="820" cy="640" rx="42" ry="38" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <circle cx="806" cy="630" r="7" fill="#1a1620"/>
-  <circle cx="834" cy="630" r="7" fill="#1a1620"/>
-  <path d="M802 652 Q820 664 838 652" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-
-  <path d="M910 590 C930 570 960 575 965 595 C970 615 955 635 935 635 C915 635 898 620 900 600 Z" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <circle cx="922" cy="610" r="5" fill="#1a1620"/>
-  <circle cx="944" cy="610" r="5" fill="#1a1620"/>
-
-  <path d="M1010 600 Q1030 580 1050 600 Q1070 620 1050 640 Q1030 660 1010 640 Q990 620 1010 600" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <path d="M1100 600 Q1120 580 1140 600 Q1160 620 1140 640 Q1120 660 1100 640 Q1080 620 1100 600" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <path d="M1190 600 Q1210 580 1230 600 Q1250 620 1230 640 Q1210 660 1190 640 Q1170 620 1190 600" fill="none" stroke="#1a1620" stroke-width="3"/>
-
-  <path d="M1320 590 m0,0 a4,4 0 1,0 -8,0 a14,14 0 1,0 28,0 a24,24 0 1,0 -48,0 a34,34 0 1,0 68,0" fill="none" stroke="#1a1620" stroke-width="3"/>
-
-  <!-- very bottom fill -->
-  <path d="M60 750 Q80 730 100 750 Q120 770 140 750 Q160 730 180 750" fill="none" stroke="#1a1620" stroke-width="3" stroke-linecap="round"/>
-  <circle cx="260" cy="760" r="24" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="254" cy="754" r="4" fill="#1a1620"/>
-  <circle cx="266" cy="754" r="4" fill="#1a1620"/>
-  <path d="M252 768 Q260 774 268 768" fill="none" stroke="#1a1620" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M340 740 L350 770 L380 770 L356 788 L366 818 L340 800 L314 818 L324 788 L300 770 L330 770 Z" fill="none" stroke="#1a1620" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M430 760 m0,0 a4,4 0 1,1 8,0 a12,12 0 1,1 -24,0 a20,20 0 1,1 40,0" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <path d="M560 740 Q580 720 600 740 Q620 760 600 780 Q580 800 560 780 Q540 760 560 740" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="580" cy="760" r="6" fill="none" stroke="#1a1620" stroke-width="2.5"/>
-  <ellipse cx="720" cy="760" rx="50" ry="42" fill="none" stroke="#1a1620" stroke-width="3.5"/>
-  <circle cx="704" cy="748" r="8" fill="#1a1620"/>
-  <circle cx="736" cy="748" r="8" fill="#1a1620"/>
-  <path d="M700 772 Q720 784 740 772" fill="none" stroke="#1a1620" stroke-width="3.5" stroke-linecap="round"/>
-  <path d="M860 740 Q880 720 900 740 Q920 760 900 780 Q880 800 860 780 Q840 760 860 740" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="876" cy="760" r="4" fill="#1a1620"/>
-  <circle cx="892" cy="760" r="4" fill="#1a1620"/>
-  <path d="M1000 750 Q1020 730 1040 750 Q1060 770 1040 790 Q1020 810 1000 790 Q980 770 1000 750" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <circle cx="1016" cy="770" r="4" fill="#1a1620"/>
-  <circle cx="1032" cy="770" r="4" fill="#1a1620"/>
-  <path d="M1012 780 Q1020 786 1028 780" fill="none" stroke="#1a1620" stroke-width="2" stroke-linecap="round"/>
-  <path d="M1120 740 Q1140 720 1160 740 Q1180 760 1160 780 Q1140 800 1120 780 Q1100 760 1120 740" fill="none" stroke="#1a1620" stroke-width="3"/>
-  <path d="M1260 750 L1274 790 L1310 790 L1282 812 L1292 848 L1260 826 L1228 848 L1238 812 L1210 790 L1246 790 Z" fill="none" stroke="#1a1620" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M1360 740 Q1380 720 1400 740 Q1420 760 1400 780 Q1380 800 1360 780 Q1340 760 1360 740" fill="none" stroke="#1a1620" stroke-width="3"/>
 </svg>
 
-<!-- ══════════════════════════════════
-     PAGES (all sit above the SVG via z-index)
-     ══════════════════════════════════ -->
-
-<!-- PAGE 1: LANDING -->
+<!-- ══ PAGE 1: LANDING ══ -->
 <div id="page1" class="page active">
   <div class="paper-card">
     <div class="brand-wrap">
       <div class="brand-title">Skill<span class="hi">Up</span></div>
     </div>
-    <div class="brand-sub">
-      Want to build skills for your future but<br>
-      <strong>don't know where to start?</strong>
-    </div>
+    <div class="brand-sub">Want to build skills for your future but<br><strong>don't know where to start?</strong></div>
     <button class="start-btn" onclick="goTo(2)">✏️ Start</button>
     <div class="landing-note">🎓 150+ majors · skill checklists · downloadable roadmaps</div>
   </div>
 </div>
 
-<!-- PAGE 2: FORM -->
+<!-- ══ PAGE 2: FORM ══ -->
 <div id="page2" class="page">
   <div class="paper-card">
     <button class="back-btn" onclick="goTo(1)">← Back</button>
     <div class="page-heading">Let's find your<br>path! 🗺️</div>
     <div class="page-sub">Fill in your details below ✍️</div>
-
     <div class="form-group">
       <label class="form-label" for="nameIn">📛 Your Name</label>
       <input class="form-input" id="nameIn" type="text" placeholder="e.g. Alex Johnson" autocomplete="off"/>
@@ -920,10 +415,8 @@ body {
       <label class="form-label" for="levelSel">🎓 Degree Level</label>
       <select class="form-select" id="levelSel">
         <option value="">— Select level —</option>
-        <option>Bachelor's</option>
-        <option>Master's</option>
-        <option>PhD / Doctoral</option>
-        <option>Professional (MD, JD, etc.)</option>
+        <option>Bachelor's</option><option>Master's</option>
+        <option>PhD / Doctoral</option><option>Professional (MD, JD, etc.)</option>
       </select>
     </div>
     <div class="form-group">
@@ -937,55 +430,91 @@ body {
   </div>
 </div>
 
-<!-- PAGE 3: ROADMAP -->
+<!-- ══ PAGE 3: ROADMAP (with AI chatbot) ══ -->
 <div id="page3" class="page">
   <div class="paper-card">
-    <button class="back-btn" onclick="goTo(2)">← Back</button>
+    <button class="back-btn" onclick="goTo(2);hideChatbot()">← Back</button>
     <div class="greeting" id="greeting"></div>
     <div class="roadmap-title" id="rmTitle"></div>
-
     <div class="prog-wrap">
       <div class="prog-label"><span>📊 Progress</span><span id="progPct">0%</span></div>
       <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
     </div>
-
     <div class="dl-row">
       <button class="dl-btn dl-pdf" onclick="dlPdf()">🖨️ Download Roadmap (PDF)</button>
       <button class="dl-btn dl-txt" onclick="dlTxt()">📋 Download Checklist</button>
     </div>
-
-    <div class="road-path" id="roadPath">
-      <div class="road-line"></div>
-    </div>
+    <div class="road-path" id="roadPath"><div class="road-line"></div></div>
   </div>
 </div>
 
-<!-- PAGE 4: NOT FOUND -->
+<!-- ══ PAGE 4: NOT FOUND ══ -->
 <div id="page4" class="page">
   <div class="paper-card">
     <button class="back-btn" onclick="goTo(2)">← Try Again</button>
     <span class="nf-icon">🤔</span>
     <div class="nf-title">Hmm, we don't have that major yet!</div>
-    <div class="nf-desc">We searched everywhere but couldn't find a roadmap for <strong id="nfMajor">"your major"</strong> yet. But don't worry — we'll add it!</div>
-    <div class="nf-box">
-      📬 Send your major name to us and we'll build the roadmap and update the site. You'll be helping future students too!<br><br>
-      <b>Email:</b> subhiksha.paulraj@gmail.com
-    </div>
+    <div class="nf-desc">We searched everywhere but couldn't find a roadmap for <strong id="nfMajor">"your major"</strong> yet.</div>
+    <div class="nf-box">📬 Send your major name to us and we'll build the roadmap and update the site!<br><br><b>Email:</b> subhiksha.paulraj@gmail.com</div>
     <a id="nfLink" href="#" class="email-btn">✉️ Email Your Major</a>
     <div style="margin-top:20px;font-size:17px;color:#aaa;">Check back soon! 🌟</div>
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     AI CHATBOT WIDGET (Roadmap page only)
+     ══════════════════════════════════════════ -->
+
+<!-- Toggle button -->
+<button id="chat-toggle-btn" onclick="toggleChat()" title="Ask about your roadmap">🤖</button>
+
+<!-- Chat panel -->
+<div id="chat-panel">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="chat-header-icon">🎓</div>
+    <div class="chat-header-text">
+      <div class="chat-header-title">SkillUp AI Advisor</div>
+      <div class="chat-header-sub">Ask me anything about your roadmap!</div>
+    </div>
+    <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+  </div>
+
+  <!-- Hint banner -->
+  <div class="chat-hint">
+    💡 <strong>Ask specific questions</strong> about your roadmap — like which step to start, what tools to learn, how long each stage takes, or how to prepare for jobs in your field!
+  </div>
+
+  <!-- Messages -->
+  <div id="chat-messages"></div>
+
+  <!-- Quick suggestions -->
+  <div class="chat-suggestions" id="chat-suggestions">
+    <span class="sugg-pill" onclick="sendSuggestion(this)">Where do I start?</span>
+    <span class="sugg-pill" onclick="sendSuggestion(this)">How long does this take?</span>
+    <span class="sugg-pill" onclick="sendSuggestion(this)">What jobs can I get?</span>
+    <span class="sugg-pill" onclick="sendSuggestion(this)">Best resources?</span>
+    <span class="sugg-pill" onclick="sendSuggestion(this)">Hardest step?</span>
+  </div>
+
+  <!-- Input row -->
+  <div class="chat-input-row">
+    <input id="chat-input" type="text" placeholder="Ask about your roadmap…" 
+           onkeydown="if(event.key==='Enter')sendChat()"/>
+    <button id="chat-send-btn" onclick="sendChat()">Send ✈️</button>
+  </div>
+</div>
+
+
+<!-- ══ MAIN SCRIPT ══ -->
 <script>
-// ═══════════════════════ DATA ═══════════════════════
-const PROGRAMS = ["Agricultural Business and Management","Agronomy and Crop Science","Animal Sciences","Horticulture","Agricultural Engineering","Food Science and Technology","Equine Science","Environmental Science / Environmental Studies","Natural Resources Management","Forestry","Wildlife Biology / Wildlife, Fish, and Wildlands Science and Management","Environmental Policy and Management","Architecture","Landscape Architecture","Interior Architecture / Environmental Design","American Studies","Latin American Studies","African/African American Studies","Asian Studies","Women's, Gender, and Sexuality Studies","Communication Studies","Journalism","Broadcast Journalism","Public Relations and Advertising","Digital and Social Media","Graphic Communications","Animation, Interactive Technology, Video Graphics","Radio and Television Production","Computer Science","Information Technology","Information Systems","Cybersecurity","Data Science / Data Analytics","Early Childhood Education","Elementary Education","Secondary Education","Special Education","Educational Technology","Mechanical Engineering","Electrical Engineering","Civil Engineering","Chemical Engineering","Computer Engineering","Industrial Engineering","Aerospace Engineering","Biomedical Engineering","Engineering Technology","Mechanical Engineering Technology","Electrical/Electronic Engineering Technology","Industrial Technology","Spanish","French","German","Linguistics","Classics","Applied Linguistics","Human Development and Family Studies","Nutrition / Dietetics","Fashion Merchandising","Family and Consumer Sciences","Legal Studies / Pre-Law","English","Creative Writing","Rhetoric and Writing","Liberal Arts and Sciences","General Studies","Humanities","Biology","Biochemistry","Microbiology","Cell and Molecular Biology","Neuroscience","Biotechnology","Mathematics","Applied Mathematics","Statistics","Data Science","Military Technologies","Cognitive Science","Environmental Studies","Interdisciplinary Studies","Kinesiology / Exercise Science","Sport Management","Parks and Recreation Management","Philosophy","Religious Studies","Theology","Pastoral Studies","Physics","Chemistry","Geology / Earth Science","Atmospheric Sciences / Meteorology","Astronomy and Astrophysics","Applied Laboratory Science","Chemical Technology","Nuclear Technology","Psychology","Behavioral Neuroscience","Criminal Justice","Criminology","Homeland Security","Emergency Management","Social Work","Public Administration","Human Services","Economics","Political Science","Sociology","Anthropology","International Relations","Geography","Construction Management","Automotive Technology","Studio Art","Graphic Design","Music","Theatre","Dance","Film/Media Arts","Nursing","Public Health","Health Sciences","Kinesiology","Medical Laboratory Science","Radiologic Sciences","Speech, Language, and Hearing Sciences","Business Administration / Management","Accounting","Finance","Marketing","Management Information Systems","Supply Chain Management","Human Resource Management","Entrepreneurship","History"];
+// ─── DATA ───
+const PROGRAMS=["Agricultural Business and Management","Agronomy and Crop Science","Animal Sciences","Horticulture","Agricultural Engineering","Food Science and Technology","Equine Science","Environmental Science / Environmental Studies","Natural Resources Management","Forestry","Wildlife Biology / Wildlife, Fish, and Wildlands Science and Management","Environmental Policy and Management","Architecture","Landscape Architecture","Interior Architecture / Environmental Design","American Studies","Latin American Studies","African/African American Studies","Asian Studies","Women's, Gender, and Sexuality Studies","Communication Studies","Journalism","Broadcast Journalism","Public Relations and Advertising","Digital and Social Media","Graphic Communications","Animation, Interactive Technology, Video Graphics","Radio and Television Production","Computer Science","Information Technology","Information Systems","Cybersecurity","Data Science / Data Analytics","Early Childhood Education","Elementary Education","Secondary Education","Special Education","Educational Technology","Mechanical Engineering","Electrical Engineering","Civil Engineering","Chemical Engineering","Computer Engineering","Industrial Engineering","Aerospace Engineering","Biomedical Engineering","Engineering Technology","Mechanical Engineering Technology","Electrical/Electronic Engineering Technology","Industrial Technology","Spanish","French","German","Linguistics","Classics","Applied Linguistics","Human Development and Family Studies","Nutrition / Dietetics","Fashion Merchandising","Family and Consumer Sciences","Legal Studies / Pre-Law","English","Creative Writing","Rhetoric and Writing","Liberal Arts and Sciences","General Studies","Humanities","Biology","Biochemistry","Microbiology","Cell and Molecular Biology","Neuroscience","Biotechnology","Mathematics","Applied Mathematics","Statistics","Data Science","Military Technologies","Cognitive Science","Environmental Studies","Interdisciplinary Studies","Kinesiology / Exercise Science","Sport Management","Parks and Recreation Management","Philosophy","Religious Studies","Theology","Pastoral Studies","Physics","Chemistry","Geology / Earth Science","Atmospheric Sciences / Meteorology","Astronomy and Astrophysics","Applied Laboratory Science","Chemical Technology","Nuclear Technology","Psychology","Behavioral Neuroscience","Criminal Justice","Criminology","Homeland Security","Emergency Management","Social Work","Public Administration","Human Services","Economics","Political Science","Sociology","Anthropology","International Relations","Geography","Construction Management","Automotive Technology","Studio Art","Graphic Design","Music","Theatre","Dance","Film/Media Arts","Nursing","Public Health","Health Sciences","Kinesiology","Medical Laboratory Science","Radiologic Sciences","Speech, Language, and Hearing Sciences","Business Administration / Management","Accounting","Finance","Marketing","Management Information Systems","Supply Chain Management","Human Resource Management","Entrepreneurship","History"];
+const FIELD_MAP={"Agricultural Business and Management":"Agriculture","Agronomy and Crop Science":"Agriculture","Animal Sciences":"Agriculture","Horticulture":"Agriculture","Agricultural Engineering":"Agriculture","Food Science and Technology":"Agriculture","Equine Science":"Agriculture","Environmental Science / Environmental Studies":"Environment","Natural Resources Management":"Environment","Forestry":"Environment","Wildlife Biology / Wildlife, Fish, and Wildlands Science and Management":"Environment","Environmental Policy and Management":"Environment","Architecture":"Architecture","Landscape Architecture":"Architecture","Interior Architecture / Environmental Design":"Architecture","American Studies":"Humanities","Latin American Studies":"Humanities","African/African American Studies":"Humanities","Asian Studies":"Humanities","Women's, Gender, and Sexuality Studies":"Humanities","Communication Studies":"Communication","Journalism":"Communication","Broadcast Journalism":"Communication","Public Relations and Advertising":"Communication","Digital and Social Media":"Communication","Graphic Communications":"Communication","Animation, Interactive Technology, Video Graphics":"Communication","Radio and Television Production":"Communication","Computer Science":"Tech","Information Technology":"Tech","Information Systems":"Tech","Cybersecurity":"Tech","Data Science / Data Analytics":"Tech","Early Childhood Education":"Education","Elementary Education":"Education","Secondary Education":"Education","Special Education":"Education","Educational Technology":"Education","Mechanical Engineering":"Engineering","Electrical Engineering":"Engineering","Civil Engineering":"Engineering","Chemical Engineering":"Engineering","Computer Engineering":"Engineering","Industrial Engineering":"Engineering","Aerospace Engineering":"Engineering","Biomedical Engineering":"Engineering","Engineering Technology":"Engineering","Mechanical Engineering Technology":"Engineering","Electrical/Electronic Engineering Technology":"Engineering","Industrial Technology":"Engineering","Spanish":"Languages","French":"Languages","German":"Languages","Linguistics":"Languages","Classics":"Languages","Applied Linguistics":"Languages","Human Development and Family Studies":"Social","Nutrition / Dietetics":"Health","Fashion Merchandising":"Business","Family and Consumer Sciences":"Social","Legal Studies / Pre-Law":"Law","English":"Humanities","Creative Writing":"Humanities","Rhetoric and Writing":"Humanities","Liberal Arts and Sciences":"Humanities","General Studies":"Humanities","Humanities":"Humanities","Biology":"Science","Biochemistry":"Science","Microbiology":"Science","Cell and Molecular Biology":"Science","Neuroscience":"Science","Biotechnology":"Science","Mathematics":"Math","Applied Mathematics":"Math","Statistics":"Math","Data Science":"Math","Military Technologies":"Other","Cognitive Science":"Science","Environmental Studies":"Environment","Interdisciplinary Studies":"Humanities","Kinesiology / Exercise Science":"Health","Sport Management":"Business","Parks and Recreation Management":"Social","Philosophy":"Humanities","Religious Studies":"Humanities","Theology":"Humanities","Pastoral Studies":"Humanities","Physics":"Science","Chemistry":"Science","Geology / Earth Science":"Science","Atmospheric Sciences / Meteorology":"Science","Astronomy and Astrophysics":"Science","Applied Laboratory Science":"Science","Chemical Technology":"Science","Nuclear Technology":"Science","Psychology":"Social","Behavioral Neuroscience":"Science","Criminal Justice":"Social","Criminology":"Social","Homeland Security":"Social","Emergency Management":"Social","Social Work":"Social","Public Administration":"Social","Human Services":"Social","Economics":"Social","Political Science":"Social","Sociology":"Social","Anthropology":"Social","International Relations":"Social","Geography":"Social","Construction Management":"Business","Automotive Technology":"Other","Studio Art":"Arts","Graphic Design":"Arts","Music":"Arts","Theatre":"Arts","Dance":"Arts","Film/Media Arts":"Arts","Nursing":"Health","Public Health":"Health","Health Sciences":"Health","Kinesiology":"Health","Medical Laboratory Science":"Health","Radiologic Sciences":"Health","Speech, Language, and Hearing Sciences":"Health","Business Administration / Management":"Business","Accounting":"Business","Finance":"Business","Marketing":"Business","Management Information Systems":"Business","Supply Chain Management":"Business","Human Resource Management":"Business","Entrepreneurship":"Business","History":"Humanities"};
+const ICONS={Agriculture:["🌾","🐄","🌱","🔬","📊","🤝"],Environment:["🌿","🌍","🗺️","📋","🔬","🌊"],Architecture:["✏️","📐","🏗️","💻","🏛️","📁"],Humanities:["📚","🔍","✍️","🌐","🎤","📜"],Communication:["📢","✏️","📸","🎙️","📱","🗂️"],Tech:["💻","🧮","🛠️","🔐","📊","🚀"],Education:["🧒","📚","📝","🏫","🤝","🎓"],Engineering:["📐","⚙️","💻","🔧","🏗️","📄"],Languages:["🗣️","📖","✍️","🌍","🎓","💼"],Health:["🩺","🔬","💊","📋","🧪","🏥"],Business:["💼","📊","📈","💰","🤝","🚀"],Science:["🔬","⚗️","🧬","📊","💻","🔭"],Math:["📐","∑","📊","💻","🔢","📈"],Social:["👥","📊","⚖️","💬","📋","🌍"],Arts:["🎨","✏️","🎭","💻","🎬","🏆"],Law:["⚖️","📚","✍️","🔍","📋","💼"],Other:["⚙️","📊","🛡️","💡","🔧","📋"]};
+const COLORS=['c0','c1','c2','c3','c4','c5'];
 
-const FIELD_MAP = {"Agricultural Business and Management":"Agriculture","Agronomy and Crop Science":"Agriculture","Animal Sciences":"Agriculture","Horticulture":"Agriculture","Agricultural Engineering":"Agriculture","Food Science and Technology":"Agriculture","Equine Science":"Agriculture","Environmental Science / Environmental Studies":"Environment","Natural Resources Management":"Environment","Forestry":"Environment","Wildlife Biology / Wildlife, Fish, and Wildlands Science and Management":"Environment","Environmental Policy and Management":"Environment","Architecture":"Architecture","Landscape Architecture":"Architecture","Interior Architecture / Environmental Design":"Architecture","American Studies":"Humanities","Latin American Studies":"Humanities","African/African American Studies":"Humanities","Asian Studies":"Humanities","Women's, Gender, and Sexuality Studies":"Humanities","Communication Studies":"Communication","Journalism":"Communication","Broadcast Journalism":"Communication","Public Relations and Advertising":"Communication","Digital and Social Media":"Communication","Graphic Communications":"Communication","Animation, Interactive Technology, Video Graphics":"Communication","Radio and Television Production":"Communication","Computer Science":"Tech","Information Technology":"Tech","Information Systems":"Tech","Cybersecurity":"Tech","Data Science / Data Analytics":"Tech","Early Childhood Education":"Education","Elementary Education":"Education","Secondary Education":"Education","Special Education":"Education","Educational Technology":"Education","Mechanical Engineering":"Engineering","Electrical Engineering":"Engineering","Civil Engineering":"Engineering","Chemical Engineering":"Engineering","Computer Engineering":"Engineering","Industrial Engineering":"Engineering","Aerospace Engineering":"Engineering","Biomedical Engineering":"Engineering","Engineering Technology":"Engineering","Mechanical Engineering Technology":"Engineering","Electrical/Electronic Engineering Technology":"Engineering","Industrial Technology":"Engineering","Spanish":"Languages","French":"Languages","German":"Languages","Linguistics":"Languages","Classics":"Languages","Applied Linguistics":"Languages","Human Development and Family Studies":"Social","Nutrition / Dietetics":"Health","Fashion Merchandising":"Business","Family and Consumer Sciences":"Social","Legal Studies / Pre-Law":"Law","English":"Humanities","Creative Writing":"Humanities","Rhetoric and Writing":"Humanities","Liberal Arts and Sciences":"Humanities","General Studies":"Humanities","Humanities":"Humanities","Biology":"Science","Biochemistry":"Science","Microbiology":"Science","Cell and Molecular Biology":"Science","Neuroscience":"Science","Biotechnology":"Science","Mathematics":"Math","Applied Mathematics":"Math","Statistics":"Math","Data Science":"Math","Military Technologies":"Other","Cognitive Science":"Science","Environmental Studies":"Environment","Interdisciplinary Studies":"Humanities","Kinesiology / Exercise Science":"Health","Sport Management":"Business","Parks and Recreation Management":"Social","Philosophy":"Humanities","Religious Studies":"Humanities","Theology":"Humanities","Pastoral Studies":"Humanities","Physics":"Science","Chemistry":"Science","Geology / Earth Science":"Science","Atmospheric Sciences / Meteorology":"Science","Astronomy and Astrophysics":"Science","Applied Laboratory Science":"Science","Chemical Technology":"Science","Nuclear Technology":"Science","Psychology":"Social","Behavioral Neuroscience":"Science","Criminal Justice":"Social","Criminology":"Social","Homeland Security":"Social","Emergency Management":"Social","Social Work":"Social","Public Administration":"Social","Human Services":"Social","Economics":"Social","Political Science":"Social","Sociology":"Social","Anthropology":"Social","International Relations":"Social","Geography":"Social","Construction Management":"Business","Automotive Technology":"Other","Studio Art":"Arts","Graphic Design":"Arts","Music":"Arts","Theatre":"Arts","Dance":"Arts","Film/Media Arts":"Arts","Nursing":"Health","Public Health":"Health","Health Sciences":"Health","Kinesiology":"Health","Medical Laboratory Science":"Health","Radiologic Sciences":"Health","Speech, Language, and Hearing Sciences":"Health","Business Administration / Management":"Business","Accounting":"Business","Finance":"Business","Marketing":"Business","Management Information Systems":"Business","Supply Chain Management":"Business","Human Resource Management":"Business","Entrepreneurship":"Business","History":"Humanities"};
-
-const ICONS = {Agriculture:["🌾","🐄","🌱","🔬","📊","🤝"],Environment:["🌿","🌍","🗺️","📋","🔬","🌊"],Architecture:["✏️","📐","🏗️","💻","🏛️","📁"],Humanities:["📚","🔍","✍️","🌐","🎤","📜"],Communication:["📢","✏️","📸","🎙️","📱","🗂️"],Tech:["💻","🧮","🛠️","🔐","📊","🚀"],Education:["🧒","📚","📝","🏫","🤝","🎓"],Engineering:["📐","⚙️","💻","🔧","🏗️","📄"],Languages:["🗣️","📖","✍️","🌍","🎓","💼"],Health:["🩺","🔬","💊","📋","🧪","🏥"],Business:["💼","📊","📈","💰","🤝","🚀"],Science:["🔬","⚗️","🧬","📊","💻","🔭"],Math:["📐","∑","📊","💻","🔢","📈"],Social:["👥","📊","⚖️","💬","📋","🌍"],Arts:["🎨","✏️","🎭","💻","🎬","🏆"],Law:["⚖️","📚","✍️","🔍","📋","💼"],Other:["⚙️","📊","🛡️","💡","🔧","📋"]};
-const COLORS = ['c0','c1','c2','c3','c4','c5'];
-
-const ROADMAP_DATA = {
+const ROADMAP_DATA={
 "Computer Science":[{title:"Programming Foundations",items:["Learn Python or Java — pick one and commit","Master variables, control flow, functions, arrays, strings","Practice 50–100 small coding problems","Error handling and basic debugging"]},{title:"Core CS Math",items:["Discrete math: sets, logic, proofs, combinatorics","Basic probability and counting","Boolean algebra and number systems"]},{title:"Data Structures & Algorithms",items:["Arrays, linked lists, stacks, queues, hash tables","Binary trees, heaps, graphs","Sorting & searching (quicksort, BFS, DFS)","Big-O analysis: time and space complexity"]},{title:"Systems & Architecture",items:["Computer organization: binary, CPU, memory hierarchy","OS basics: processes, threads, scheduling, virtual memory","Networking basics: TCP/IP, HTTP, sockets"]},{title:"Software Engineering",items:["Version control with Git and GitHub","Design patterns: factory, singleton, strategy","Unit testing, CI/CD basics","Modular code design and documentation"]},{title:"Specialization & Projects",items:["Pick a track: web, AI/ML, security, systems, HCI","Build 3+ substantial projects on GitHub","Contribute to open source or do an internship"]}],
 "Data Science / Data Analytics":[{title:"Math & Probability",items:["Calculus I–II and linear algebra","Probability distributions and statistical inference","Hypothesis testing and regression basics"]},{title:"Programming & Data Handling",items:["Python: syntax, functions, modules, packages","NumPy and pandas for data wrangling","Git and basic Linux shell usage"]},{title:"Databases",items:["SQL: SELECT, JOIN, GROUP BY, window functions","Query optimization basics","Basic data modeling and normalization"]},{title:"Exploratory Analysis & Viz",items:["EDA: summarizing, detecting outliers, transformations","Visualization with Matplotlib, Seaborn, or Plotly","Clear chart design and storytelling with data"]},{title:"Machine Learning",items:["Supervised: linear/logistic regression, random forests, SVMs","Unsupervised: K-means clustering, PCA","Model evaluation: cross-validation, bias/variance, metrics"]},{title:"Advanced & Projects",items:["Deep learning with PyTorch/TensorFlow","BI tools: Tableau or Power BI","Build 5–10 projects with real datasets and write-ups"]}],
 "Business Administration / Management":[{title:"Accounting & Economics",items:["Financial accounting: balance sheet, income statement","Managerial accounting and cost analysis","Micro and macroeconomics fundamentals"]},{title:"Core Business Skills",items:["Marketing: 4Ps, segmentation, positioning","Finance: time value of money, NPV, capital budgeting","Operations and supply chain basics"]},{title:"Quantitative Skills",items:["Statistics and data analysis for business","Excel: formulas, pivot tables, dashboards","Basic regression and forecasting"]},{title:"Management & Leadership",items:["Organizational behavior and team dynamics","Human resource management principles","Business law and ethics"]},{title:"Strategy",items:["Business policy and strategic frameworks","Case analysis and competitive strategy","Industry analysis: Porter's Five Forces, SWOT"]},{title:"Practice",items:["Internship in a business setting","Capstone or case competition project","Build a LinkedIn profile and professional portfolio"]}],
@@ -1012,8 +541,8 @@ const ROADMAP_DATA = {
 "Entrepreneurship":[{title:"Opportunity Recognition",items:["Customer discovery: interviews and empathy mapping","Identifying pain points and unmet needs","Analyzing trends and market gaps"]},{title:"Ideation & Validation",items:["Design thinking process","MVP (minimum viable product) development","A/B testing and pivot decisions"]},{title:"Business Planning",items:["Lean canvas and business model canvas","Financial projections: revenue, expenses, runway","Competitive analysis and positioning"]},{title:"Funding & Finance",items:["Bootstrapping vs external funding","Pitch deck and investor storytelling","Understanding equity, debt, and grants"]},{title:"Marketing & Sales",items:["Go-to-market strategy","Digital marketing channels for early-stage startups","Building and managing a sales funnel"]},{title:"Practice",items:["Enter pitch competitions","Join startup incubator or accelerator","Launch a small side project or MVP"]}]
 };
 
-function getGenericRoadmap(m) {
-  return [
+function getGenericRoadmap(m){
+  return[
     {title:"Foundations & Prerequisites",items:[`Intro survey course in ${m}`,"Core prerequisite subjects","Foundational reading list and key textbooks"]},
     {title:"Core Concepts",items:["Major theories and frameworks in the field","Key thinkers and landmark studies","Essential vocabulary and concepts"]},
     {title:"Research & Methods",items:["Research methods specific to the discipline","Statistical or qualitative analysis as applicable","Academic writing and citation standards"]},
@@ -1023,216 +552,274 @@ function getGenericRoadmap(m) {
   ];
 }
 
-// ═══════════════════════ STATE ═══════════════════════
-let currentMajor = '', currentStudent = '';
+// ─── STATE ───
+let currentMajor='', currentStudent='', chatHistory=[];
 
-// ═══════════════════════ NAVIGATION ═══════════════════════
-function goTo(n) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+// ─── NAVIGATION ───
+function goTo(n){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page'+n).classList.add('active');
   window.scrollTo(0,0);
+  // Show/hide chatbot toggle based on page
+  const btn=document.getElementById('chat-toggle-btn');
+  if(n===3){ btn.style.display='flex'; }
+  else { btn.style.display='none'; document.getElementById('chat-panel').classList.remove('open'); }
 }
 
-// ═══════════════════════ AUTOCOMPLETE ═══════════════════════
-const majorIn = document.getElementById('majorIn');
-const acList  = document.getElementById('acList');
-let acIdx = -1;
-
-majorIn.addEventListener('input', function() {
-  const v = this.value.trim().toLowerCase();
-  acList.innerHTML = ''; acIdx = -1;
-  if (!v) { acList.classList.remove('show'); return; }
-  const hits = PROGRAMS.filter(p => p.toLowerCase().includes(v));
-  if (!hits.length) {
-    acList.innerHTML = '<div class="nf-msg">No match — you can still submit!</div>';
-    acList.classList.add('show'); return;
-  }
-  hits.slice(0,12).forEach(m => {
-    const d = document.createElement('div');
-    d.className = 'autocomplete-item';
-    d.textContent = m;
-    d.addEventListener('mousedown', () => { majorIn.value = m; acList.classList.remove('show'); });
+// ─── AUTOCOMPLETE ───
+const majorIn=document.getElementById('majorIn');
+const acList=document.getElementById('acList');
+let acIdx=-1;
+majorIn.addEventListener('input',function(){
+  const v=this.value.trim().toLowerCase();
+  acList.innerHTML=''; acIdx=-1;
+  if(!v){acList.classList.remove('show');return;}
+  const hits=PROGRAMS.filter(p=>p.toLowerCase().includes(v));
+  if(!hits.length){acList.innerHTML='<div class="nf-msg">No match — you can still submit!</div>';acList.classList.add('show');return;}
+  hits.slice(0,12).forEach(m=>{
+    const d=document.createElement('div');d.className='autocomplete-item';d.textContent=m;
+    d.addEventListener('mousedown',()=>{majorIn.value=m;acList.classList.remove('show');});
     acList.appendChild(d);
   });
   acList.classList.add('show');
 });
-
-majorIn.addEventListener('keydown', e => {
-  const items = acList.querySelectorAll('.autocomplete-item');
-  if (e.key==='ArrowDown') acIdx = Math.min(acIdx+1, items.length-1);
-  else if (e.key==='ArrowUp') acIdx = Math.max(acIdx-1, 0);
-  else if (e.key==='Enter' && acIdx>=0) { items[acIdx].dispatchEvent(new Event('mousedown')); return; }
-  else if (e.key==='Escape') { acList.classList.remove('show'); return; }
-  items.forEach((it,i) => it.classList.toggle('active', i===acIdx));
+majorIn.addEventListener('keydown',e=>{
+  const items=acList.querySelectorAll('.autocomplete-item');
+  if(e.key==='ArrowDown') acIdx=Math.min(acIdx+1,items.length-1);
+  else if(e.key==='ArrowUp') acIdx=Math.max(acIdx-1,0);
+  else if(e.key==='Enter'&&acIdx>=0){items[acIdx].dispatchEvent(new Event('mousedown'));return;}
+  else if(e.key==='Escape'){acList.classList.remove('show');return;}
+  items.forEach((it,i)=>it.classList.toggle('active',i===acIdx));
 });
-document.addEventListener('click', e => { if (!e.target.closest('.search-wrapper')) acList.classList.remove('show'); });
-document.getElementById('nameIn').addEventListener('keydown', e => { if(e.key==='Enter') majorIn.focus(); });
-majorIn.addEventListener('keydown', e => { if(e.key==='Enter' && !acList.classList.contains('show')) submit(); });
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrapper'))acList.classList.remove('show');});
+document.getElementById('nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')majorIn.focus();});
+majorIn.addEventListener('keydown',e=>{if(e.key==='Enter'&&!acList.classList.contains('show'))submit();});
 
-// ═══════════════════════ FORM SUBMIT ═══════════════════════
-function submit() {
-  const name  = document.getElementById('nameIn').value.trim();
-  const major = document.getElementById('majorIn').value.trim();
-  if (!name)  { flash(document.getElementById('nameIn'));  return; }
-  if (!major) { flash(majorIn); return; }
-  currentStudent = name; currentMajor = major;
-
-  const found = PROGRAMS.find(p => p.toLowerCase() === major.toLowerCase());
-  if (found || ROADMAP_DATA[major]) {
-    buildRoadmap(found || major);
-    goTo(3);
-  } else {
-    document.getElementById('nfMajor').textContent = `"${major}"`;
-    const sub  = encodeURIComponent(`SkillUp – Add My Major: ${major}`);
-    const body = encodeURIComponent(`Hi!\n\nI tried to find a roadmap for "${major}" on SkillUp but it wasn't there yet.\n\nCould you please add it?\n\nThanks!`);
-    document.getElementById('nfLink').href = `mailto:subhiksha.paulraj@gmail.com?subject=${sub}&body=${body}`;
+// ─── FORM SUBMIT ───
+function submit(){
+  const name=document.getElementById('nameIn').value.trim();
+  const major=document.getElementById('majorIn').value.trim();
+  if(!name){flash(document.getElementById('nameIn'));return;}
+  if(!major){flash(majorIn);return;}
+  currentStudent=name; currentMajor=major;
+  const found=PROGRAMS.find(p=>p.toLowerCase()===major.toLowerCase());
+  if(found||ROADMAP_DATA[major]){buildRoadmap(found||major);goTo(3);}
+  else{
+    document.getElementById('nfMajor').textContent=`"${major}"`;
+    const sub=encodeURIComponent(`SkillUp – Add My Major: ${major}`);
+    const body=encodeURIComponent(`Hi!\n\nI tried to find a roadmap for "${major}" on SkillUp but it wasn't there yet.\n\nCould you please add it?\n\nThanks!`);
+    document.getElementById('nfLink').href=`mailto:subhiksha.paulraj@gmail.com?subject=${sub}&body=${body}`;
     goTo(4);
   }
 }
-function flash(el) {
-  el.style.borderBottomColor = '#e03c3c';
-  el.focus();
-  setTimeout(() => el.style.borderBottomColor = '', 1200);
-}
+function flash(el){el.style.borderBottomColor='#e03c3c';el.focus();setTimeout(()=>el.style.borderBottomColor='',1200);}
 
-// ═══════════════════════ BUILD ROADMAP ═══════════════════════
-function buildRoadmap(major) {
-  const field = FIELD_MAP[major] || 'Other';
-  const icons  = ICONS[field] || ICONS.Other;
-  const steps  = ROADMAP_DATA[major] || getGenericRoadmap(major);
-
-  document.getElementById('greeting').innerHTML = `Hey <strong>${currentStudent}</strong>! Here's your personalised roadmap 🎯`;
-  document.getElementById('rmTitle').innerHTML  = `${major} <span class="field-badge">${field}</span>`;
-
-  const path = document.getElementById('roadPath');
-  const line = path.querySelector('.road-line');
-  path.innerHTML = ''; path.appendChild(line);
-
-  steps.forEach((step, si) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'road-step';
-
-    const ico = document.createElement('div');
-    ico.className = `step-ico ${COLORS[si%6]}`;
-    ico.textContent = icons[si % icons.length];
-
-    const card = document.createElement('div');
-    card.className = 'step-card';
-
-    const num   = document.createElement('div'); num.className   = 'step-num';   num.textContent   = `Step ${si+1} of ${steps.length}`;
-    const title = document.createElement('div'); title.className = 'step-title'; title.textContent = step.title;
-    const items = document.createElement('div'); items.className = 'step-items';
-
-    step.items.forEach((item, ii) => {
-      const lbl = document.createElement('label'); lbl.className = 'step-item';
-      const key = `${major}_${si}_${ii}`;
-      const ok  = localStorage.getItem(key) === '1';
-      const cb  = document.createElement('input'); cb.type = 'checkbox'; cb.checked = ok;
-      if (ok) lbl.classList.add('done');
-      cb.addEventListener('change', function() {
-        localStorage.setItem(key, this.checked ? '1' : '0');
-        lbl.classList.toggle('done', this.checked);
+// ─── BUILD ROADMAP ───
+function buildRoadmap(major){
+  const field=FIELD_MAP[major]||'Other';
+  const icons=ICONS[field]||ICONS.Other;
+  const steps=ROADMAP_DATA[major]||getGenericRoadmap(major);
+  document.getElementById('greeting').innerHTML=`Hey <strong>${currentStudent}</strong>! Here's your personalised roadmap 🎯`;
+  document.getElementById('rmTitle').innerHTML=`${major} <span class="field-badge">${field}</span>`;
+  const path=document.getElementById('roadPath');
+  const line=path.querySelector('.road-line');
+  path.innerHTML=''; path.appendChild(line);
+  steps.forEach((step,si)=>{
+    const wrap=document.createElement('div'); wrap.className='road-step';
+    const ico=document.createElement('div'); ico.className=`step-ico ${COLORS[si%6]}`; ico.textContent=icons[si%icons.length];
+    const card=document.createElement('div'); card.className='step-card';
+    const num=document.createElement('div'); num.className='step-num'; num.textContent=`Step ${si+1} of ${steps.length}`;
+    const title=document.createElement('div'); title.className='step-title'; title.textContent=step.title;
+    const items=document.createElement('div'); items.className='step-items';
+    step.items.forEach((item,ii)=>{
+      const lbl=document.createElement('label'); lbl.className='step-item';
+      const key=`${major}_${si}_${ii}`;
+      const ok=localStorage.getItem(key)==='1';
+      const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=ok;
+      if(ok)lbl.classList.add('done');
+      cb.addEventListener('change',function(){
+        localStorage.setItem(key,this.checked?'1':'0');
+        lbl.classList.toggle('done',this.checked);
         updateProgress();
-        if (this.checked) confetti(4);
+        if(this.checked)confetti(4);
       });
-      const sp = document.createElement('span'); sp.textContent = item;
-      lbl.append(cb, sp); items.appendChild(lbl);
+      const sp=document.createElement('span'); sp.textContent=item;
+      lbl.append(cb,sp); items.appendChild(lbl);
     });
-
-    const toggle = () => {
-      items.classList.toggle('open');
-      ico.style.transform = items.classList.contains('open') ? 'scale(1.15) rotate(-8deg)' : '';
-    };
-    card.addEventListener('click', toggle); ico.addEventListener('click', toggle);
-    card.append(num, title, items);
-    wrap.append(ico, card);
-    path.appendChild(wrap);
+    const toggle=()=>{items.classList.toggle('open');ico.style.transform=items.classList.contains('open')?'scale(1.15) rotate(-8deg)':'';};
+    card.addEventListener('click',toggle); ico.addEventListener('click',toggle);
+    card.append(num,title,items); wrap.append(ico,card); path.appendChild(wrap);
   });
-
-  setTimeout(() => { const f = path.querySelector('.step-items'); if(f) f.classList.add('open'); }, 200);
+  setTimeout(()=>{const f=path.querySelector('.step-items');if(f)f.classList.add('open');},200);
   updateProgress();
+  // Reset chatbot context for new roadmap
+  chatHistory=[];
+  const msgs=document.getElementById('chat-messages');
+  msgs.innerHTML='';
+  addBotMessage(`Hi ${currentStudent}! 👋 I'm your AI advisor for the **${major}** roadmap. I know every step of this roadmap in detail — ask me anything! For example: which step to tackle first, how long each stage takes, or what jobs you can land. 🚀`);
 }
 
-function updateProgress() {
-  const steps = ROADMAP_DATA[currentMajor] || getGenericRoadmap(currentMajor);
-  let total=0, done=0;
-  steps.forEach((s,si) => s.items.forEach((_,ii) => { total++; if(localStorage.getItem(`${currentMajor}_${si}_${ii}`)===`1`) done++; }));
-  const p = total ? Math.round(done/total*100) : 0;
-  document.getElementById('progFill').style.width = p+'%';
-  document.getElementById('progPct').textContent  = p+'%';
+function updateProgress(){
+  const steps=ROADMAP_DATA[currentMajor]||getGenericRoadmap(currentMajor);
+  let total=0,done=0;
+  steps.forEach((s,si)=>s.items.forEach((_,ii)=>{total++;if(localStorage.getItem(`${currentMajor}_${si}_${ii}`)==='1')done++;}));
+  const p=total?Math.round(done/total*100):0;
+  document.getElementById('progFill').style.width=p+'%';
+  document.getElementById('progPct').textContent=p+'%';
 }
 
-// ═══════════════════════ PDF DOWNLOAD ═══════════════════════
-function dlPdf() {
-  const major = currentMajor;
-  const steps = ROADMAP_DATA[major] || getGenericRoadmap(major);
-  const field = FIELD_MAP[major] || 'Other';
-
-  const stepsHtml = steps.map((s,si) => `
-    <div class="step">
-      <div class="sh"><span class="sn">Step ${si+1}</span><span class="st">${s.title}</span></div>
-      <ul>${s.items.map(i=>`<li>${i}</li>`).join('')}</ul>
-    </div>`).join('');
-
-  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<title>${major} – SkillUp Roadmap</title>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Architects+Daughter&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Caveat',cursive;background-image:linear-gradient(rgba(70,100,200,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(70,100,200,.1) 1px,transparent 1px),linear-gradient(#fffdf4,#fffdf4);background-size:28px 28px;color:#1a1620;padding:44px 52px;max-width:860px;margin:0 auto}
-h1{font-family:'Architects Daughter',cursive;font-size:34px;line-height:1.1;border-bottom:4px solid #f5c518;padding-bottom:12px;margin-bottom:8px}
-.meta{color:#999;font-size:14px;margin-bottom:28px}
-.badge{display:inline-block;background:#f5c518;border:2px solid #1a1620;border-radius:20px;padding:1px 12px;font-size:13px;margin-left:8px;vertical-align:middle}
-.step{margin-bottom:24px;background:rgba(255,255,255,.9);border:2.5px solid #1a1620;border-radius:4px;padding:14px 18px;box-shadow:4px 4px 0 #f07d1a;page-break-inside:avoid}
-.sh{display:flex;align-items:center;gap:10px;border-bottom:2px dashed rgba(0,0,0,.12);padding-bottom:8px;margin-bottom:8px}
-.sn{font-family:'Architects Daughter',cursive;font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:1px;white-space:nowrap}
-.st{font-family:'Architects Daughter',cursive;font-size:19px;color:#1a1620}
-ul{list-style:none;padding:0}
-li{font-size:16px;padding:5px 0;display:flex;align-items:flex-start;gap:8px;border-bottom:1px dotted rgba(0,0,0,.1);line-height:1.45}
-li::before{content:"□";color:#f07d1a;font-size:15px;flex-shrink:0}
-.foot{margin-top:28px;text-align:center;font-size:13px;color:#ccc;border-top:1px dashed #ddd;padding-top:12px}
-.print-btn{display:block;margin:24px auto;font-family:'Architects Daughter',cursive;font-size:18px;background:#1a1620;color:white;border:none;border-radius:4px;padding:12px 32px;cursor:pointer;box-shadow:4px 4px 0 #f07d1a}
-@media print{.print-btn{display:none}body{background-color:#fffdf4!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.step{box-shadow:none}}
-</style></head><body>
-<h1>${major}<span class="badge">${field}</span></h1>
-<div class="meta">SkillUp Roadmap for <strong>${currentStudent}</strong> · ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</div>
-${stepsHtml}
-<div class="foot">Generated by SkillUp</div>
-<button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
-<script>window.addEventListener('load',()=>setTimeout(()=>window.print(),900));<\/script>
-</body></html>`;
-
-  const url = URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
-  const w = window.open(url,'_blank');
-  if (!w) { const a=document.createElement('a'); a.href=url; a.download=major.replace(/[\s\/]/g,'_')+'_Roadmap.html'; a.click(); }
-  setTimeout(()=>URL.revokeObjectURL(url), 60000);
+// ─── PDF/TXT DOWNLOAD ───
+function dlPdf(){
+  const major=currentMajor;
+  const steps=ROADMAP_DATA[major]||getGenericRoadmap(major);
+  const field=FIELD_MAP[major]||'Other';
+  const stepsHtml=steps.map((s,si)=>`<div class="step"><div class="sh"><span class="sn">Step ${si+1}</span><span class="st">${s.title}</span></div><ul>${s.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('');
+  const html=`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>${major} – SkillUp Roadmap</title><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Architects+Daughter&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Caveat',cursive;background:#fffdf4;color:#1a1620;padding:44px 52px;max-width:860px;margin:0 auto}h1{font-family:'Architects Daughter',cursive;font-size:34px;border-bottom:4px solid #f5c518;padding-bottom:12px;margin-bottom:8px}.meta{color:#999;font-size:14px;margin-bottom:28px}.badge{display:inline-block;background:#f5c518;border:2px solid #1a1620;border-radius:20px;padding:1px 12px;font-size:13px;margin-left:8px}.step{margin-bottom:24px;background:white;border:2.5px solid #1a1620;border-radius:4px;padding:14px 18px;box-shadow:4px 4px 0 #f07d1a;page-break-inside:avoid}.sh{display:flex;align-items:center;gap:10px;border-bottom:2px dashed rgba(0,0,0,.12);padding-bottom:8px;margin-bottom:8px}.sn{font-family:'Architects Daughter',cursive;font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:1px}.st{font-family:'Architects Daughter',cursive;font-size:19px}ul{list-style:none;padding:0}li{font-size:16px;padding:5px 0;display:flex;align-items:flex-start;gap:8px;border-bottom:1px dotted rgba(0,0,0,.1);line-height:1.45}li::before{content:"□";color:#f07d1a;font-size:15px;flex-shrink:0}.foot{margin-top:28px;text-align:center;font-size:13px;color:#ccc;border-top:1px dashed #ddd;padding-top:12px}.print-btn{display:block;margin:24px auto;font-family:'Architects Daughter',cursive;font-size:18px;background:#1a1620;color:white;border:none;border-radius:4px;padding:12px 32px;cursor:pointer;box-shadow:4px 4px 0 #f07d1a}@media print{.print-btn{display:none}}</style></head><body><h1>${major}<span class="badge">${field}</span></h1><div class="meta">SkillUp Roadmap for <strong>${currentStudent}</strong> · ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</div>${stepsHtml}<div class="foot">Generated by SkillUp</div><button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button><script>window.addEventListener('load',()=>setTimeout(()=>window.print(),900));<\/script></body></html>`;
+  const url=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
+  const w=window.open(url,'_blank');
+  if(!w){const a=document.createElement('a');a.href=url;a.download=major.replace(/[\s\/]/g,'_')+'_Roadmap.html';a.click();}
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
 }
-
-// ═══════════════════════ CHECKLIST DOWNLOAD ═══════════════════════
-function dlTxt() {
-  const major = currentMajor;
-  const steps = ROADMAP_DATA[major] || getGenericRoadmap(major);
-  let t = `SKILLUP CHECKLIST\nMajor: ${major}\nStudent: ${currentStudent}\nDate: ${new Date().toLocaleDateString()}\n${'─'.repeat(48)}\n\n`;
-  steps.forEach((s,si) => {
-    t += `STEP ${si+1}: ${s.title.toUpperCase()}\n`;
-    s.items.forEach((item,ii) => { const d = localStorage.getItem(`${major}_${si}_${ii}`)==='1'; t += `  [${d?'x':' '}] ${item}\n`; });
-    t += '\n';
-  });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([t],{type:'text/plain'}));
-  a.download = major.replace(/[\s\/]/g,'_')+'_Checklist.txt';
+function dlTxt(){
+  const major=currentMajor;
+  const steps=ROADMAP_DATA[major]||getGenericRoadmap(major);
+  let t=`SKILLUP CHECKLIST\nMajor: ${major}\nStudent: ${currentStudent}\nDate: ${new Date().toLocaleDateString()}\n${'─'.repeat(48)}\n\n`;
+  steps.forEach((s,si)=>{t+=`STEP ${si+1}: ${s.title.toUpperCase()}\n`;s.items.forEach((item,ii)=>{const d=localStorage.getItem(`${major}_${si}_${ii}`)==='1';t+=`  [${d?'x':' '}] ${item}\n`;});t+='\n';});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));
+  a.download=major.replace(/[\s\/]/g,'_')+'_Checklist.txt';
   a.click();
 }
 
-// ═══════════════════════ CONFETTI ═══════════════════════
-function confetti(n) {
-  const cols = ['#f5c518','#e03c3c','#2f7dd4','#3eaf6f','#7c3fff','#f07d1a'];
-  for (let i=0;i<n;i++) {
-    const el = document.createElement('div'); el.className = 'confetti';
-    el.style.cssText = `left:${Math.random()*100}vw;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${1.4+Math.random()*1.4}s;animation-delay:${Math.random()*.4}s;--dx:${(Math.random()-.5)*180}px;transform:rotate(${Math.random()*360}deg);border-radius:${Math.random()>.5?'50%':'2px'}`;
+// ─── CONFETTI ───
+function confetti(n){
+  const cols=['#f5c518','#e03c3c','#2f7dd4','#3eaf6f','#7c3fff','#f07d1a'];
+  for(let i=0;i<n;i++){
+    const el=document.createElement('div');el.className='confetti';
+    el.style.cssText=`left:${Math.random()*100}vw;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${1.4+Math.random()*1.4}s;animation-delay:${Math.random()*.4}s;--dx:${(Math.random()-.5)*180}px;transform:rotate(${Math.random()*360}deg);border-radius:${Math.random()>.5?'50%':'2px'}`;
     document.body.appendChild(el);
     el.addEventListener('animationend',()=>el.remove());
   }
+}
+
+// ════════════════════════════════════════════════
+// AI CHATBOT — Roadmap page only
+// ════════════════════════════════════════════════
+
+function toggleChat(){
+  const panel=document.getElementById('chat-panel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')){
+    document.getElementById('chat-input').focus();
+    scrollChatBottom();
+  }
+}
+
+function hideChatbot(){
+  document.getElementById('chat-toggle-btn').style.display='none';
+  document.getElementById('chat-panel').classList.remove('open');
+}
+
+function scrollChatBottom(){
+  const msgs=document.getElementById('chat-messages');
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function addBotMessage(text, typing=false){
+  const msgs=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className='msg bot'+(typing?' typing':'');
+  div.innerHTML=`<div class="msg-avatar">🤖</div><div class="msg-bubble">${text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(div);
+  scrollChatBottom();
+  return div;
+}
+
+function addUserMessage(text){
+  const msgs=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className='msg user';
+  div.innerHTML=`<div class="msg-avatar">🎓</div><div class="msg-bubble">${text}</div>`;
+  msgs.appendChild(div);
+  scrollChatBottom();
+}
+
+function sendSuggestion(el){
+  const text=el.textContent;
+  document.getElementById('chat-input').value=text;
+  sendChat();
+}
+
+async function sendChat(){
+  const input=document.getElementById('chat-input');
+  const sendBtn=document.getElementById('chat-send-btn');
+  const text=input.value.trim();
+  if(!text||!currentMajor)return;
+
+  input.value='';
+  sendBtn.disabled=true;
+  addUserMessage(text);
+
+  // Typing indicator
+  const typingDiv=addBotMessage('✍️ Thinking…', true);
+
+  // Build system prompt with full roadmap context
+  const steps=ROADMAP_DATA[currentMajor]||getGenericRoadmap(currentMajor);
+  const roadmapText=steps.map((s,i)=>`Step ${i+1}: ${s.title}\n${s.items.map(it=>`  - ${it}`).join('\n')}`).join('\n\n');
+  const field=FIELD_MAP[currentMajor]||'Other';
+
+  const systemPrompt=`You are SkillUp AI Advisor, an expert academic and career advisor embedded in the SkillUp roadmap app. You are helping a student named ${currentStudent} who is studying ${currentMajor} (field: ${field}).
+
+Here is their exact roadmap — you have deep expertise on every item in it:
+
+${roadmapText}
+
+Your role:
+- Answer questions SPECIFICALLY about this roadmap and this major
+- Give practical, actionable advice on steps, resources, timelines, and career paths
+- Be encouraging, friendly, and concise (keep replies under 150 words unless a detailed list is needed)
+- Use bullet points for lists, but keep conversational replies short
+- If asked about something off-topic, gently redirect back to the roadmap
+- Address the student by name occasionally to keep it personal
+- Use emojis sparingly to match the fun, sketchy tone of the app`;
+
+  // Build messages array with history
+  const messages=[
+    ...chatHistory,
+    {role:'user',content:text}
+  ];
+
+  try {
+    const response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:400,
+        system:systemPrompt,
+        messages:messages
+      })
+    });
+
+    const data=await response.json();
+    const reply=data.content&&data.content[0]?data.content[0].text:'Sorry, I could not get a response. Please try again!';
+
+    // Update history (keep last 8 turns to avoid token overflow)
+    chatHistory.push({role:'user',content:text},{role:'assistant',content:reply});
+    if(chatHistory.length>16) chatHistory=chatHistory.slice(-16);
+
+    // Replace typing indicator with real response
+    typingDiv.classList.remove('typing');
+    typingDiv.querySelector('.msg-bubble').innerHTML=reply.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+    scrollChatBottom();
+
+  } catch(err){
+    typingDiv.querySelector('.msg-bubble').textContent='⚠️ Connection error. Make sure your API key is set up!';
+    typingDiv.classList.remove('typing');
+  }
+
+  sendBtn.disabled=false;
+  input.focus();
 }
 </script>
 </body>
